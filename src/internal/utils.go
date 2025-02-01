@@ -15,6 +15,11 @@ func id() string {
 	return uuid.NewString()
 }
 
+type KeyPair struct {
+	Private string
+	Public  string
+}
+
 func Hash(data string) string {
 	result := sha256.Sum256([]byte(data))
 	return hex.EncodeToString(result[:])

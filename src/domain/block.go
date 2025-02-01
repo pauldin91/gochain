@@ -9,32 +9,31 @@ import (
 )
 
 type Block struct {
-	timestamp  time.Time
-	lastHash   string
-	hash       string
-	data       []string
-	nonce      int64
-	difficulty int64
+	Timestamp  time.Time `json:"timestamp"`
+	LastHash   string    `json:"last_hash"`
+	Hash       string    `json:"hash"`
+	Data       []string  `json:"data"`
+	Nonce      int64     `json:"nonce"`
+	Difficulty int64     `json:"difficulty"`
 }
 
 func genesis() Block {
 	block := Block{
-		timestamp: time.Now().UTC(),
-		lastHash:  "**************",
-		nonce:     0,
+		LastHash: "**************",
+		Nonce:    0,
 	}
-	block.data = make([]string, 0)
-	block.hash = internal.Hash(block.ToString())
+	block.Data = make([]string, 0)
+	block.Hash = internal.Hash(block.ToString())
 	return block
 }
 
 func (b *Block) ToString() string {
-	return fmt.Sprintf("", b.timestamp, b.lastHash, b.hash, strings.Join(b.data, ","), b.nonce, b.difficulty)
+	return fmt.Sprintf("Timestamp: %s", b.Timestamp.Format(time.RFC3339), b.LastHash, b.Hash, strings.Join(b.Data, ","), b.Nonce, b.Difficulty)
 }
 
 func adjustDifficulty(lastBlock Block, currentTime time.Time, mineRate int64) int64 {
-	diff := lastBlock.difficulty
-	dur := lastBlock.timestamp.UnixMilli() + mineRate
+	diff := lastBlock.Difficulty
+	dur := lastBlock.Timestamp.UnixMilli() + mineRate
 
 	if dur > currentTime.UnixMilli() {
 		diff += 1
@@ -46,22 +45,22 @@ func adjustDifficulty(lastBlock Block, currentTime time.Time, mineRate int64) in
 
 func mineBlock(lastBlock Block, data string, mineRate int64) Block {
 	copy := Block{
-		timestamp:  lastBlock.timestamp,
-		hash:       lastBlock.hash,
-		lastHash:   lastBlock.lastHash,
-		data:       lastBlock.data,
-		nonce:      0,
-		difficulty: lastBlock.difficulty,
+		Timestamp:  lastBlock.Timestamp,
+		Hash:       lastBlock.Hash,
+		LastHash:   lastBlock.LastHash,
+		Data:       lastBlock.Data,
+		Nonce:      0,
+		Difficulty: lastBlock.Difficulty,
 	}
 	nonce := 0
 
 	for {
 		nonce++
-		copy.timestamp = time.Now().UTC()
-		copy.difficulty = adjustDifficulty(lastBlock, copy.timestamp, mineRate)
-		copy.hash = internal.Hash(copy.ToString())
-		pref := strings.Repeat("0", int(copy.difficulty))
-		if strings.HasPrefix(copy.hash, pref) {
+		copy.Timestamp = time.Now().UTC()
+		copy.Difficulty = adjustDifficulty(lastBlock, copy.Timestamp, mineRate)
+		copy.Hash = internal.Hash(copy.ToString())
+		pref := strings.Repeat("0", int(copy.Difficulty))
+		if strings.HasPrefix(copy.Hash, pref) {
 			return copy
 		}
 

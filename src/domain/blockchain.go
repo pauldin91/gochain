@@ -31,8 +31,8 @@ func (b *Blockchain) isValid(bc []Block) bool {
 		block := bc[i]
 		lastBlock := bc[i-1]
 
-		if block.lastHash != lastBlock.hash ||
-			block.hash != internal.Hash(block.ToString()) {
+		if block.LastHash != lastBlock.Hash ||
+			block.Hash != internal.Hash(block.ToString()) {
 			return false
 		}
 	}

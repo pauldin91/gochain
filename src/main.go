@@ -1,21 +1,14 @@
 package main
 
 import (
-	"log"
-
-	"github.com/pauldin91/gochain/src/api"
-	"github.com/pauldin91/gochain/src/internal"
+	"github.com/pauldin91/gochain/src/app"
 )
 
 func main() {
-	sb := api.ServerBuilder{Server: &api.Server{}}
-	cfg, err := internal.LoadConfig(".")
-	if err != nil {
-		log.Fatal("unable to load config")
-	}
+	sb := app.WsServerBuilder{&app.WsServer{}}
+
 	server := sb.
-		WithConfig(cfg).
-		WithRouter().
+		WithConfig(".").
 		Build()
 	server.Start()
 }
