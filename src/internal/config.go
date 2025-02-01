@@ -1,0 +1,30 @@
+package internal
+
+import "github.com/spf13/viper"
+
+type Config struct {
+	CertPath          string `mapstructure:"CERTIFICATE_PATH"`
+	CertFile          string `mapstructure:"CERTIFICATE_FILE"`
+	CertKey           string `mapstructure:"CERTIFICATE_KEY"`
+	HttpServerAddress string `mapstructure:"HTTP_SERVER_ADDRESS"`
+	MiningReward      int    `mapstructure:"MINING_REWARD"`
+	Difficulty        int    `mapstructure:"DIFFICULTY"`
+	MineRate          int    `mapstructure:"MINE_RATE"`
+	InitialBalance    int    `mapstructure:"INITIAL_BALANCE"`
+}
+
+func LoadConfig(path string) (Config, error) {
+	viper.AddConfigPath(path)
+	viper.SetConfigName("app")
+	viper.SetConfigType("env")
+	viper.AutomaticEnv()
+
+	var config Config
+	err := viper.ReadInConfig()
+	if err != nil {
+		return config, err
+	}
+
+	err = viper.Unmarshal(&config)
+	return config, err
+}
