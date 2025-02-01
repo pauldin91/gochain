@@ -9,7 +9,7 @@ import (
 
 func main() {
 	sb := api.ServerBuilder{Server: &api.Server{}}
-	cfg, err := internal.LoadConfig("../../")
+	cfg, err := internal.LoadConfig(".")
 	if err != nil {
 		log.Fatal("unable to load config")
 	}

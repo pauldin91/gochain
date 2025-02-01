@@ -3,6 +3,7 @@ package api
 import (
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
@@ -18,8 +19,16 @@ func (s *Server) Start() {
 
 	certFile := filepath.Join(s.cfg.CertPath, s.cfg.CertFile)
 	certKey := filepath.Join(s.cfg.CertPath, s.cfg.CertKey)
+	if _, err := os.Stat(certFile); os.IsNotExist(err) {
+		log.Fatal("unable to load certs")
+	}
 
-	err := http.ListenAndServeTLS(":"+string(s.cfg.HttpServerAddress), certFile, certKey, s.router)
+	server := &http.Server{
+		Addr:    s.cfg.HttpServerAddress,
+		Handler: s.router,
+	}
+
+	err := server.ListenAndServeTLS(certFile, certKey)
 	if err != nil {
 		log.Fatal("Could not start server")
 	}
@@ -36,6 +45,7 @@ func (sb ServerBuilder) WithConfig(cfg internal.Config) ServerBuilder {
 
 func (sb ServerBuilder) WithRouter() ServerBuilder {
 	sb.Server.router = chi.NewRouter()
+	sb.Server.router.Get(balanceEndpoint, balanceHandler)
 	sb.Server.router.Get(blockEndpoint, blockHandler)
 	sb.Server.router.Get(mineEndpoint, mineHandler)
 	sb.Server.router.Get(transactionsEndpoint, getTransactionsHandler)
