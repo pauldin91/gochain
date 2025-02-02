@@ -10,17 +10,18 @@ type Blockchain struct {
 	Chain []Block
 }
 
-func Create() {
+func Create() Blockchain {
 	bc := Blockchain{}
 	bc.Chain = append(bc.Chain, genesis())
+	return bc
 }
 
-func (bc *Blockchain) addBlock(data string, mineRate int64) Block {
+func (bc *Blockchain) AddBlock(data string, mineRate int64) Block {
 	block := mineBlock(bc.Chain[len(bc.Chain)-1], data, mineRate)
 	bc.Chain = append(bc.Chain, block)
 	return block
 }
-func (b *Blockchain) isValid(bc []Block) bool {
+func (b *Blockchain) IsValid(bc []Block) bool {
 
 	jsonGenesis, _ := json.Marshal([]byte(bc[0].ToString()))
 	gen := genesis()
@@ -39,8 +40,8 @@ func (b *Blockchain) isValid(bc []Block) bool {
 	return true
 }
 
-func (bc *Blockchain) replaceChain(newChain []Block) bool {
-	if len(newChain) <= len(newChain) || bc.isValid(newChain) {
+func (bc *Blockchain) ReplaceChain(newChain []Block) bool {
+	if len(newChain) <= len(newChain) || bc.IsValid(newChain) {
 		return false
 	}
 	bc.Chain = newChain

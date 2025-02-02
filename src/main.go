@@ -5,10 +5,13 @@ import (
 )
 
 func main() {
-	sb := app.WsServerBuilder{&app.WsServer{}}
+	s := app.ServerBuilder{&app.HttpServer{}}
 
-	server := sb.
+	httpServer := s.
 		WithConfig(".").
+		WithRouter().
+		WithWsServer().
 		Build()
-	server.Start()
+
+	httpServer.Start()
 }

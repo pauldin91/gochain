@@ -39,6 +39,9 @@ func adjustDifficulty(lastBlock Block, currentTime time.Time, mineRate int64) in
 		diff += 1
 	} else {
 		diff -= 1
+		if diff <= 0 {
+			diff = 1
+		}
 	}
 	return diff
 }

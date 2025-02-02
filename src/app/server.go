@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/gorilla/websocket"
 	"github.com/pauldin91/gochain/src/internal"
 )
 
@@ -17,34 +18,7 @@ type Server interface {
 type HttpServer struct {
 	cfg    internal.Config
 	router *chi.Mux
-	p2p    WsServer
-}
-
-type ServerBuilder struct {
-	Server *HttpServer
-}
-
-func (sb ServerBuilder) WithConfig(settings string) ServerBuilder {
-	cfg, err := internal.LoadConfig(settings)
-	if err != nil {
-		log.Fatal("unable to load config")
-	}
-	sb.Server.cfg = cfg
-	return sb
-}
-
-func (sb ServerBuilder) WithRouter() ServerBuilder {
-	sb.Server.router = chi.NewRouter()
-	sb.Server.router.Get(balanceEndpoint, balanceHandler)
-	sb.Server.router.Get(blockEndpoint, blockHandler)
-	sb.Server.router.Get(mineEndpoint, mineHandler)
-	sb.Server.router.Get(transactionsEndpoint, getTransactionsHandler)
-	sb.Server.router.Post(transactionsEndpoint, createTransactionHandler)
-	return sb
-}
-
-func (sb ServerBuilder) Build() *HttpServer {
-	return sb.Server
+	p2p    *WsServer
 }
 
 func (s *HttpServer) Start() {
@@ -60,10 +34,30 @@ func (s *HttpServer) Start() {
 		Handler: s.router,
 	}
 
+	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		upgrader := websocket.Upgrader{
+			ReadBufferSize:  int(s.cfg.WsReadLimit),
+			WriteBufferSize: int(s.cfg.WsWriteLimit),
+		}
+		ws, err := upgrader.Upgrade(w, req, nil)
+		if err != nil {
+			log.Printf("could not establish a connection with %s", ws.RemoteAddr())
+		}
+
+		ws.SetReadLimit(s.cfg.WsReadLimit)
+		s.p2p.sockets = append(s.p2p.sockets, ws)
+		s.p2p.broadcast(chain.Chain)
+	})
+
 	err := server.ListenAndServeTLS(certFile, certKey)
 	if err != nil {
 		log.Fatal("Could not start server")
 	}
+	log.Printf("INFO : http server starter on %s\n", s.cfg.HttpServerAddress)
+	err = http.ListenAndServeTLS(s.cfg.WsServerAddress, certFile, certKey, nil)
+	if err != nil {
+		log.Fatal("Could not start ws server", err)
+	}
+	log.Printf("INFO : ws server starter on %s\n", s.cfg.WsServerAddress)
 }
-
 
