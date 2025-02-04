@@ -70,7 +70,8 @@ func mineBlock(lastBlock Block, data string, mineRate int64) Block {
 			Nonce:      nonce,
 			Timestamp:  timestamp,
 			Difficulty: difficulty,
-			LastHash:   lastBlock.LastHash,
+			LastHash:   lastBlock.Hash,
+			Data:       data,
 		}
 		hash = internal.Hash(copy.ToString())
 		copy.Hash = hash

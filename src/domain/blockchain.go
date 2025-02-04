@@ -21,19 +21,21 @@ func (bc *Blockchain) AddBlock(data string, mineRate int64) Block {
 	bc.Chain = append(bc.Chain, block)
 	return block
 }
-func (b *Blockchain) IsValid(bc []Block) bool {
+func IsValid(bc []Block) bool {
 
-	jsonGenesis, _ := json.Marshal([]byte(bc[0].ToString()))
-	gen := genesis()
-	if string(jsonGenesis) != gen.ToString() {
+	jsonGenesis, _ := json.Marshal(bc[0])
+	gen, _ := json.Marshal(genesis())
+	if string(jsonGenesis) != string(gen) {
 		return false
 	}
 	for i := 1; i < len(bc); i++ {
 		block := bc[i]
 		lastBlock := bc[i-1]
-
+		block.Hash = ""
+		expectedHash := internal.Hash(block.ToString())
+		block.Hash = bc[i].Hash
 		if block.LastHash != lastBlock.Hash ||
-			block.Hash != internal.Hash(block.ToString()) {
+			block.Hash != expectedHash {
 			return false
 		}
 	}
@@ -41,7 +43,10 @@ func (b *Blockchain) IsValid(bc []Block) bool {
 }
 
 func (bc *Blockchain) ReplaceChain(newChain []Block) bool {
-	if len(newChain) <= len(newChain) || bc.IsValid(newChain) {
+
+	isValid := IsValid(newChain)
+
+	if len(newChain) <= len(bc.Chain) || !isValid {
 		return false
 	}
 	bc.Chain = newChain
