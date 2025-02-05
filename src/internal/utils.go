@@ -1,35 +1,56 @@
 package internal
 
 import (
+	"crypto"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/x509"
 	"encoding/hex"
-
-	"github.com/google/uuid"
+	"log"
 )
 
-func id() string {
-	return uuid.NewString()
+type KeyPair struct {
+	keyPair *ecdsa.PrivateKey
 }
 
-type KeyPair struct {
-	Private string
-	Public  string
+func NewKeyPair() KeyPair {
+	pair, err := genKeyPair()
+	if err != nil {
+		log.Fatal("unable to generate Key pair")
+	}
+	return KeyPair{
+		keyPair: pair,
+	}
+}
+
+func (pair *KeyPair) GetPublicKey() string {
+	pub, _ := x509.MarshalPKIXPublicKey(pair.keyPair)
+	public := string(pub)
+	return public
+}
+
+func (pair *KeyPair) Sign(hashedData string) string {
+
+	res, err := pair.keyPair.Sign(rand.Reader, []byte(hashedData), crypto.SHA256)
+	if err != nil {
+		log.Fatal("could sign data")
+	}
+	return string(res)
+}
+
+func (pair *KeyPair) Verify() bool {
+
+	return true
+}
+
+func genKeyPair() (private *ecdsa.PrivateKey, err error) {
+	pair, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	return pair, err
 }
 
 func Hash(data string) string {
 	result := sha256.Sum256([]byte(data))
 	return hex.EncodeToString(result[:])
-}
-
-func genKeyPair() (private string, public string, err error) {
-	pair, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	byts, _ := x509.MarshalECPrivateKey(pair)
-	pub, err := x509.MarshalPKIXPublicKey(pair.PublicKey)
-	private = string(byts)
-	public = string(pub)
-	return private, public, err
 }
