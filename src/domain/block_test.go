@@ -12,7 +12,7 @@ var genesisBlock = genesis()
 
 func TestGenesis(t *testing.T) {
 
-	if genesisBlock.Data != "" ||
+	if len(genesisBlock.Data) != 0 ||
 		genesisBlock.LastHash != genesisLastHash {
 		t.Error("Data and lasthash should be empty for genesis")
 	}

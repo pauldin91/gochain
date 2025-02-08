@@ -3,12 +3,8 @@ package domain
 import (
 	"encoding/json"
 	"testing"
+	"time"
 )
-
-type DataMsg struct {
-	Recipient string  `json:"recipient"`
-	Amount    float64 `json:"amount"`
-}
 
 const (
 	TEST_MINING_RATE int64 = 3000
@@ -16,9 +12,10 @@ const (
 
 var gen Block = genesis()
 
-var msg = DataMsg{
-	Recipient: "r3ciP13nT",
-	Amount:    50.44,
+var msg = TransactionData{
+	timestamp: time.Now().UTC(),
+	address:   "r3ciP13nT",
+	amount:    50.44,
 }
 
 func TestCreate(t *testing.T) {
@@ -33,7 +30,7 @@ func TestCreate(t *testing.T) {
 func TestAddBlock(t *testing.T) {
 	e := Create()
 	jsonMsg, _ := json.Marshal(msg)
-	e.AddBlock(string(jsonMsg), TEST_MINING_RATE )
+	e.AddBlock(string(jsonMsg), TEST_MINING_RATE)
 
 	if len(e.Chain) != 2 {
 		t.Error("invalid chain length")
@@ -43,7 +40,7 @@ func TestAddBlock(t *testing.T) {
 func TestReplaceChain(t *testing.T) {
 	e := Create()
 	jsonMsg, _ := json.Marshal(msg)
-	e.AddBlock(string(jsonMsg), TEST_MINING_RATE )
+	e.AddBlock(string(jsonMsg), TEST_MINING_RATE)
 
 	b := Create()
 	res := e.ReplaceChain(b.Chain)

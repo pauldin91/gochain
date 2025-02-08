@@ -7,8 +7,10 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/hex"
 	"log"
+	"math/big"
 )
 
 type KeyPair struct {
@@ -40,9 +42,20 @@ func (pair *KeyPair) Sign(hashedData string) string {
 	return string(res)
 }
 
-func (pair *KeyPair) Verify() bool {
+func VerifySignature(publicKey string, hashed []byte, sig []byte) bool {
+	keyBytes, _ := base64.StdEncoding.DecodeString(publicKey)
 
-	return true
+	half := len(keyBytes) / 2
+	x := new(big.Int).SetBytes(keyBytes[:half])
+	y := new(big.Int).SetBytes(keyBytes[half:])
+
+	pubKey := &ecdsa.PublicKey{
+		Curve: elliptic.P256(), // Change if needed
+		X:     x,
+		Y:     y,
+	}
+
+	return ecdsa.VerifyASN1(pubKey, hashed, sig)
 }
 
 func genKeyPair() (private *ecdsa.PrivateKey, err error) {
