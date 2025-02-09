@@ -2,7 +2,6 @@ package domain
 
 import (
 	"encoding/json"
-	"log"
 	"testing"
 
 	"github.com/pauldin91/gochain/src/internal"
