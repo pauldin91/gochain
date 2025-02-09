@@ -1,11 +1,20 @@
 package domain
 
 type TransactionPool struct {
-	transactions map[string]Transaction
+	transactions []Transaction
 }
 
 func (p *TransactionPool) AddOrUpdateById(transaction Transaction) {
-	p.transactions[transaction.Id.String()] = transaction
+	var t *Transaction = nil
+	for i, tr := range p.transactions {
+		if tr.Id == transaction.Id {
+			p.transactions[i] = transaction
+			break
+		}
+	}
+	if t == nil {
+		p.transactions = append(p.transactions, transaction)
+	}
 
 }
 
@@ -29,7 +38,7 @@ func (p *TransactionPool) ValidTransactions() []Transaction {
 	return transactions
 }
 func (p *TransactionPool) Clear() {
-	p.transactions = make(map[string]Transaction)
+	p.transactions = []Transaction{}
 }
 
 func filter(transaction Transaction) *Transaction {

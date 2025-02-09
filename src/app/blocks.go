@@ -14,7 +14,7 @@ func (ws HttpServer) blockHandler(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	chain.AddBlock(block.ToString(), int64(ws.cfg.MineRate))
+	chain.AddBlock(block.ToString())
 
 	w.WriteHeader(http.StatusCreated)
 }

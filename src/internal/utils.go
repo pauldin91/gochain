@@ -17,19 +17,28 @@ type KeyPair struct {
 	keyPair *ecdsa.PrivateKey
 }
 
-func NewKeyPair() KeyPair {
+// NewKeyPair generates a new key pair safely
+func NewKeyPair() *KeyPair {
 	pair, err := genKeyPair()
 	if err != nil {
-		log.Fatal("unable to generate Key pair")
+		return nil
 	}
-	return KeyPair{
-		keyPair: pair,
-	}
+	return &KeyPair{keyPair: pair}
 }
 
+// GetPublicKey returns the base64-encoded public key
 func (pair *KeyPair) GetPublicKey() string {
-	pub, _ := x509.MarshalPKIXPublicKey(pair.keyPair)
-	public := string(pub)
+	if pair.keyPair == nil {
+		return ""
+	}
+
+	pub, err := x509.MarshalPKIXPublicKey(&pair.keyPair.PublicKey)
+	if err != nil {
+		return ""
+	}
+
+	// Encode in Base64 to ensure correct string format
+	public := base64.StdEncoding.EncodeToString(pub)
 	return public
 }
 
@@ -66,4 +75,38 @@ func genKeyPair() (private *ecdsa.PrivateKey, err error) {
 func Hash(data string) string {
 	result := sha256.Sum256([]byte(data))
 	return hex.EncodeToString(result[:])
+}
+
+func FilterBy[K any, V any](items []K, v V, predicate func(K, V) bool) []K {
+	var filtered []K
+	for _, c := range items {
+		if predicate(c, v) {
+			filtered = append(filtered, c)
+		}
+	}
+	return filtered
+}
+
+func Reduce[K any](items []K, fn func(first K, second K) K) K {
+	var reduced K = items[0]
+	for _, t := range items {
+		reduced = fn(reduced, t)
+	}
+	return reduced
+
+}
+
+func FindBy[K, V any](items []K, prop V, predicate func(k K, v V) bool) *K {
+	for _, c := range items {
+		if predicate(c, prop) {
+			return &c
+		}
+	}
+	return nil
+}
+
+func ForEachAction[K any, V any](items []K, v *V, fn func(v *V, k K)) {
+	for _, c := range items {
+		fn(v, c)
+	}
 }

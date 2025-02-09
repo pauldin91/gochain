@@ -6,13 +6,10 @@ import (
 	"time"
 )
 
-const (
-	TEST_MINING_RATE int64 = 3000
-)
 
 var gen Block = genesis()
 
-var msg = TransactionData{
+var msg = Input{
 	timestamp: time.Now().UTC(),
 	address:   "r3ciP13nT",
 	amount:    50.44,
@@ -30,7 +27,7 @@ func TestCreate(t *testing.T) {
 func TestAddBlock(t *testing.T) {
 	e := Create()
 	jsonMsg, _ := json.Marshal(msg)
-	e.AddBlock(string(jsonMsg), TEST_MINING_RATE)
+	e.AddBlock(string(jsonMsg))
 
 	if len(e.Chain) != 2 {
 		t.Error("invalid chain length")
@@ -40,7 +37,7 @@ func TestAddBlock(t *testing.T) {
 func TestReplaceChain(t *testing.T) {
 	e := Create()
 	jsonMsg, _ := json.Marshal(msg)
-	e.AddBlock(string(jsonMsg), TEST_MINING_RATE)
+	e.AddBlock(string(jsonMsg))
 
 	b := Create()
 	res := e.ReplaceChain(b.Chain)

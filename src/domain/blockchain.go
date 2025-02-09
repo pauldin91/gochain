@@ -16,8 +16,8 @@ func Create() Blockchain {
 	return bc
 }
 
-func (bc *Blockchain) AddBlock(data string, mineRate int64) Block {
-	block := mineBlock(bc.Chain[len(bc.Chain)-1], data, mineRate)
+func (bc *Blockchain) AddBlock(data string) Block {
+	block := mineBlock(bc.Chain[len(bc.Chain)-1], data)
 	bc.Chain = append(bc.Chain, block)
 	return block
 }

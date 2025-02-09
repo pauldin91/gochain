@@ -10,6 +10,8 @@ import (
 
 var genesisLastHash = strings.Repeat("*", 32)
 
+var cfg, _ = internal.LoadConfig(".")
+
 type Block struct {
 	Timestamp  time.Time `json:"timestamp"`
 	LastHash   string    `json:"last_hash"`
@@ -34,7 +36,7 @@ func (b *Block) ToString() string {
 		b.Timestamp.Format(time.RFC3339), b.LastHash, b.Hash, b.Data, b.Nonce, b.Difficulty)
 }
 
-func adjustDifficulty(lastBlock Block, currentTime time.Time, mineRate int64) int64 {
+func adjustDifficulty(lastBlock Block, currentTime time.Time) int64 {
 	diff := lastBlock.Difficulty
 	var start time.Time
 	if lastBlock.Timestamp.IsZero() {
@@ -42,7 +44,7 @@ func adjustDifficulty(lastBlock Block, currentTime time.Time, mineRate int64) in
 	} else {
 		start = lastBlock.Timestamp
 	}
-	dur := start.UnixMilli() + mineRate
+	dur := start.UnixMilli() + int64(cfg.MineRate)
 
 	if dur > currentTime.UnixMilli() {
 		diff += 1
@@ -55,7 +57,7 @@ func adjustDifficulty(lastBlock Block, currentTime time.Time, mineRate int64) in
 	return diff
 }
 
-func mineBlock(lastBlock Block, data string, mineRate int64) Block {
+func mineBlock(lastBlock Block, data string) Block {
 
 	var hash string
 	var timestamp time.Time
@@ -64,7 +66,7 @@ func mineBlock(lastBlock Block, data string, mineRate int64) Block {
 	for {
 		nonce++
 		timestamp = time.Now().UTC()
-		difficulty := adjustDifficulty(lastBlock, timestamp, mineRate)
+		difficulty := adjustDifficulty(lastBlock, timestamp)
 		pref := strings.Repeat("0", int(difficulty))
 		copy := Block{
 			Nonce:      nonce,
