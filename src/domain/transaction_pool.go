@@ -20,7 +20,7 @@ func (p *TransactionPool) AddOrUpdateById(transaction Transaction) {
 
 func (p *TransactionPool) TransactionByAddress(address string) *Transaction {
 	for _, t := range p.transactions {
-		if t.Input.address == address {
+		if t.Input.Address == address {
 			return &t
 		}
 	}
@@ -44,9 +44,9 @@ func (p *TransactionPool) Clear() {
 func filter(transaction Transaction) *Transaction {
 	var totalOutput float64 = 0.0
 	for _, z := range transaction.Output {
-		totalOutput += z.amount
+		totalOutput += z.Amount
 	}
-	if transaction.Input.amount != totalOutput {
+	if transaction.Input.Amount != totalOutput {
 		return nil
 	}
 

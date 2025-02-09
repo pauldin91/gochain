@@ -27,9 +27,9 @@ func transactionWithOutputs(senderWallet *Wallet, outputs []Input) Transaction {
 		Id: uuid.New(),
 	}
 	transaction.Output = append(transaction.Output, outputs...)
-	transaction.Input.address = senderWallet.keyPair.GetPublicKey()
-	transaction.Input.amount = senderWallet.balance
-	transaction.Input.timestamp = time.Now().UTC()
+	transaction.Input.Address = senderWallet.keyPair.GetPublicKey()
+	transaction.Input.Amount = senderWallet.balance
+	transaction.Input.Timestamp = time.Now().UTC()
 	transaction.Input.sign(senderWallet)
 	return transaction
 }
@@ -40,8 +40,8 @@ func NewTransaction(senderWallet *Wallet, recipient string, amount float64) *Tra
 		return nil
 	}
 	outputs := []Input{
-		{amount: senderWallet.balance - amount, address: senderWallet.keyPair.GetPublicKey(), timestamp: time.Now().UTC()},
-		{amount: amount, address: recipient, timestamp: time.Now().UTC()},
+		{Amount: senderWallet.balance - amount, Address: senderWallet.keyPair.GetPublicKey(), Timestamp: time.Now().UTC()},
+		{Amount: amount, Address: recipient, Timestamp: time.Now().UTC()},
 	}
 	var created Transaction = transactionWithOutputs(senderWallet, outputs)
 	return &created
@@ -49,15 +49,15 @@ func NewTransaction(senderWallet *Wallet, recipient string, amount float64) *Tra
 
 func (t *Transaction) Update(senderWallet *Wallet, recipientAddress string, amount float64) {
 	senderOutput := *internal.FindBy(t.Output, senderWallet.address, findInputByAddress)
-	if amount > senderOutput.amount {
+	if amount > senderOutput.Amount {
 		log.Printf("amount %0.8f exceeds balance %0.8f", amount, senderWallet.balance)
 		return
 	}
-	senderOutput.amount = senderOutput.amount - amount
+	senderOutput.Amount = senderOutput.Amount - amount
 	newlyAdded := Input{
-		timestamp: time.Now().UTC(),
-		amount:    amount,
-		address:   recipientAddress,
+		Timestamp: time.Now().UTC(),
+		Amount:    amount,
+		Address:   recipientAddress,
 	}
 	newlyAdded.sign(senderWallet)
 	t.Output = append(t.Output, newlyAdded)

@@ -6,13 +6,12 @@ import (
 	"time"
 )
 
-
 var gen Block = genesis()
 
 var msg = Input{
-	timestamp: time.Now().UTC(),
-	address:   "r3ciP13nT",
-	amount:    50.44,
+	Timestamp: time.Now().UTC(),
+	Address:   "r3ciP13nT",
+	Amount:    50.44,
 }
 
 func TestCreate(t *testing.T) {

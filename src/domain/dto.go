@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"fmt"
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -9,26 +9,27 @@ import (
 )
 
 type Input struct {
-	timestamp time.Time `json:"timestamp"`
-	amount    float64   `json:"amount"`
-	address   string    `json:"address"`
-	signature string    `json:"signature"`
+	Timestamp time.Time `json:"timestamp"`
+	Amount    float64   `json:"amount"`
+	Address   string    `json:"address"`
+	Signature string    `json:"signature"`
 }
 
 func (i Input) GetAmount() float64 {
-	return i.amount
+	return i.Amount
 }
 
 func (i Input) GetAddress() string {
-	return i.address
+	return i.Address
 }
 
 func (t Input) String() string {
-	return fmt.Sprintf("%s | %0.8f | %s", t.address, t.amount, t.timestamp.Format(time.RFC3339))
+	res, _ := json.Marshal(t)
+	return string(res)
 }
 
 func (t *Input) sign(wallet *Wallet) {
-	t.signature = wallet.keyPair.Sign(internal.Hash(t.String()))
+	t.Signature = wallet.keyPair.Sign(internal.Hash(t.String()))
 }
 
 type TimestampAddressFilter struct {
@@ -42,4 +43,19 @@ type TransactionData struct {
 	Output []string  `json:"outputs"`
 }
 
+func (t *TransactionData) Map() Transaction {
 
+	var outputs []Input
+	for _, t := range t.Output {
+		var out Input
+		_ = json.Unmarshal([]byte(t), &out)
+		outputs = append(outputs, out)
+	}
+	var input Input
+	_ = json.Unmarshal([]byte(t.Input), &input)
+	return Transaction{
+		Id:     t.Id,
+		Input:  input,
+		Output: outputs,
+	}
+}

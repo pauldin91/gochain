@@ -77,10 +77,10 @@ func Hash(data string) string {
 	return hex.EncodeToString(result[:])
 }
 
-func FilterBy[K any, V any](items []K, v V, predicate func(K, V) bool) []K {
+func FilterBy[K any, V any](items []K, v V, predicate func(*K, V) bool) []K {
 	var filtered []K
 	for _, c := range items {
-		if predicate(c, v) {
+		if predicate(&c, v) {
 			filtered = append(filtered, c)
 		}
 	}
@@ -96,9 +96,9 @@ func Reduce[K any](items []K, fn func(first K, second K) K) K {
 
 }
 
-func FindBy[K, V any](items []K, prop V, predicate func(k K, v V) bool) *K {
+func FindBy[K, V any](items []K, prop V, predicate func(k *K, v V) bool) *K {
 	for _, c := range items {
-		if predicate(c, prop) {
+		if predicate(&c, prop) {
 			return &c
 		}
 	}
