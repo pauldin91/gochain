@@ -3,23 +3,36 @@ package domain
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/pauldin91/gochain/src/internal"
 )
 
 type Wallet struct {
-	balance float64
+	balance float64 `json:"balance"`
 	keyPair *internal.KeyPair
-	address string
+	address string `json:"address"`
+}
+
+func (w Wallet) String() string {
+	jsonWallet, _ := json.Marshal(w)
+	return string(jsonWallet)
+}
+
+func NewWallet(init float64) *Wallet {
+	res := Wallet{
+		balance: init,
+		keyPair: internal.NewKeyPair(),
+	}
+	res.address = res.keyPair.GetPublicKey()
+	return &res
 }
 
 func (w Wallet) ToString() string {
 	return fmt.Sprintf("Wallet - \npublicKey\t: %s\nbalance: %.8f\n", w.keyPair.GetPublicKey(), w.balance)
 }
 
-func (w *Wallet) CalculateBalance(chain *Blockchain) float64 {
+func (w Wallet) CalculateBalance(chain Blockchain) float64 {
 	var totalTransactions []Transaction
 	balance := w.balance
 	for _, b := range chain.Chain {
@@ -47,21 +60,29 @@ func (w *Wallet) CalculateBalance(chain *Blockchain) float64 {
 
 	filtered := internal.FilterBy(totalTransactions, v, findByAddressAndTimestamp)
 
-	internal.ForEachAction(filtered, &balance, func(b *float64, t Transaction) {
-		*b += t.Input.Amount
-	})
+	for _, i := range filtered {
+		if i.Input.Timestamp.UnixMilli() > start.UnixMilli() {
+			for _, c := range i.Output {
+				if c.Address == w.address {
+					balance += c.Amount
+					break
+				}
+			}
+		}
+	}
 
 	return balance
 }
 
-func (w *Wallet) createTransaction(recipient string, amount float64, blockchain *Blockchain, pool *TransactionPool) {
-	w.balance = w.CalculateBalance(blockchain)
+func (w *Wallet) CreateTransaction(recipient string, amount float64, blockchain Blockchain, pool *TransactionPool) bool {
 
-	if amount > w.balance {
-		log.Printf("Amount : %0.8f exceeds current balance %0.8f", amount, w.balance)
+	w.balance = w.CalculateBalance(blockchain)
+	if amount > w.balance || amount <= 0.0 {
+		return false
 	} else {
 		transaction := NewTransaction(w, recipient, amount)
 		pool.AddOrUpdateById(*transaction)
+		return true
 	}
 
 }

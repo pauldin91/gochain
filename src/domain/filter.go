@@ -10,14 +10,14 @@ var maxByTimestamp = func(k Transaction, t Transaction) Transaction {
 	}
 }
 
-var findTransactionByAddress = func(t *Transaction, a string) bool {
+var findTransactionByAddress = func(t Transaction, a string) bool {
 	return t.Input.Address == a
 }
-var findInputByAddress = func(t *Input, a string) bool {
+var findInputByAddress = func(t Input, a string) bool {
 	return t.Address == a
 }
 
-var findByAddressAndTimestamp = func(t *Transaction, v TimestampAddressFilter) bool {
+var findByAddressAndTimestamp = func(t Transaction, v TimestampAddressFilter) bool {
 	return t.Input.Timestamp.After(v.timestamp) &&
 		internal.FindBy(t.Output, v.address, findInputByAddress) != nil
 }
