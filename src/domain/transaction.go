@@ -1,32 +1,32 @@
 package domain
 
 import (
+	"encoding/json"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/pauldin91/gochain/src/internal"
 )
 
 type Transaction struct {
-	Id     uuid.UUID `json:"id"`
-	Input  Input     `json:"input"`
-	Output []Input   `json:"output"`
+	Id     uuid.UUID        `json:"id"`
+	Input  Input            `json:"input"`
+	Output map[string]Input `json:"output"`
 }
 
-func (t Transaction) OutputString() string {
-	var outputs []string
-	for _, v := range t.Output {
-		outputs = append(outputs, v.String())
-	}
-	return strings.Join(outputs, "|")
+func (t Transaction) String() string {
+	jsonT, _ := json.Marshal(t)
+	return string(jsonT)
 }
 func transactionWithOutputs(senderWallet *Wallet, outputs []Input) Transaction {
 	transaction := Transaction{
 		Id: uuid.New(),
 	}
-	transaction.Output = append(transaction.Output, outputs...)
+	transaction.Output = make(map[string]Input)
+	for _, o := range outputs {
+
+		transaction.Output[o.Address] = o
+	}
 	transaction.Input.Address = senderWallet.keyPair.GetPublicKey()
 	transaction.Input.Amount = senderWallet.balance
 	transaction.Input.Timestamp = time.Now().UTC()
@@ -36,7 +36,6 @@ func transactionWithOutputs(senderWallet *Wallet, outputs []Input) Transaction {
 
 func NewTransaction(senderWallet *Wallet, recipient string, amount float64) *Transaction {
 	if amount > senderWallet.balance {
-		//log.Errorf("Amount : %0.8f exceeds balance %0.8f\n", amount, w.balance)
 		return nil
 	}
 	outputs := []Input{
@@ -48,7 +47,7 @@ func NewTransaction(senderWallet *Wallet, recipient string, amount float64) *Tra
 }
 
 func (t *Transaction) Update(senderWallet *Wallet, recipientAddress string, amount float64) {
-	senderOutput := *internal.FindBy(t.Output, senderWallet.address, findInputByAddress)
+	senderOutput := t.Output[senderWallet.address]
 	if amount > senderOutput.Amount {
 		log.Printf("amount %0.8f exceeds balance %0.8f", amount, senderWallet.balance)
 		return
@@ -60,18 +59,5 @@ func (t *Transaction) Update(senderWallet *Wallet, recipientAddress string, amou
 		Address:   recipientAddress,
 	}
 	newlyAdded.sign(senderWallet)
-	t.Output = append(t.Output, newlyAdded)
-}
-
-func (t *Transaction) Map() TransactionData {
-
-	var outputs []string
-	for _, t := range t.Output {
-		outputs = append(outputs, t.String())
-	}
-	return TransactionData{
-		Id:     t.Id,
-		Input:  t.Input.String(),
-		Output: outputs,
-	}
+	t.Output[newlyAdded.Address] = newlyAdded
 }

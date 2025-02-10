@@ -17,8 +17,8 @@ func blockchainWallet() Wallet {
 
 var tp = TransactionPool{}
 var bc = Create()
-var senderWallet = NewWallet(55.0)
-var recipientWallet = NewWallet(44.0)
+var senderWallet = NewWallet(100.0)
+var recipientWallet = NewWallet(0.0)
 
 var testAmounts = []struct {
 	amount           float64
@@ -52,11 +52,8 @@ func TestBalance(t *testing.T) {
 		} else if !executed {
 			continue
 		}
-		var tpDtos []TransactionData
-		for _, t := range tp.transactions {
-			tpDtos = append(tpDtos, t.Map())
-		}
-		jsonTransactions, _ := json.Marshal(tpDtos)
+
+		jsonTransactions, _ := json.Marshal(tp.transactions)
 
 		bc.AddBlock(string(jsonTransactions))
 

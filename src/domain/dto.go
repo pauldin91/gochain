@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/pauldin91/gochain/src/internal"
 )
 
@@ -35,27 +34,4 @@ func (t *Input) sign(wallet *Wallet) {
 type TimestampAddressFilter struct {
 	timestamp time.Time
 	address   string
-}
-
-type TransactionData struct {
-	Id     uuid.UUID `json:"id"`
-	Input  string    `json:"input"`
-	Output []string  `json:"outputs"`
-}
-
-func (t *TransactionData) Map() Transaction {
-
-	var outputs []Input
-	for _, t := range t.Output {
-		var out Input
-		_ = json.Unmarshal([]byte(t), &out)
-		outputs = append(outputs, out)
-	}
-	var input Input
-	_ = json.Unmarshal([]byte(t.Input), &input)
-	return Transaction{
-		Id:     t.Id,
-		Input:  input,
-		Output: outputs,
-	}
 }

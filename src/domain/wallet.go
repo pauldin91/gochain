@@ -37,11 +37,7 @@ func (w Wallet) CalculateBalance(chain Blockchain) float64 {
 	balance := w.balance
 	for _, b := range chain.Chain {
 		var transactions []Transaction
-		var transactionsData []TransactionData
-		_ = json.Unmarshal([]byte(b.Data), &transactionsData)
-		for _, l := range transactionsData {
-			transactions = append(transactions, l.Map())
-		}
+		_ = json.Unmarshal([]byte(b.Data), &transactions)
 		totalTransactions = append(totalTransactions, transactions...)
 	}
 	walletInputTs := internal.FilterBy(totalTransactions, w.keyPair.GetPublicKey(), findTransactionByAddress)
@@ -49,7 +45,7 @@ func (w Wallet) CalculateBalance(chain Blockchain) float64 {
 	var start time.Time
 	if len(walletInputTs) > 0 {
 		recentInputT := internal.Reduce(walletInputTs, maxByTimestamp)
-		balance = internal.FindBy(recentInputT.Output, w.keyPair.GetPublicKey(), findInputByAddress).Amount
+		balance = recentInputT.Output[w.keyPair.GetPublicKey()].Amount
 		start = recentInputT.Input.Timestamp
 	}
 
@@ -59,16 +55,16 @@ func (w Wallet) CalculateBalance(chain Blockchain) float64 {
 	}
 
 	filtered := internal.FilterBy(totalTransactions, v, findByAddressAndTimestamp)
-
+	filteredOutputs := make(map[string]Input)
 	for _, i := range filtered {
-		if i.Input.Timestamp.UnixMilli() > start.UnixMilli() {
-			for _, c := range i.Output {
-				if c.Address == w.address {
-					balance += c.Amount
-					break
-				}
+		for _, o := range i.Output {
+			if o.Address == w.keyPair.GetPublicKey() {
+				filteredOutputs[o.Address] = o
 			}
 		}
+	}
+	for _, b := range filteredOutputs {
+		balance += b.Amount
 	}
 
 	return balance
@@ -88,5 +84,5 @@ func (w *Wallet) CreateTransaction(recipient string, amount float64, blockchain 
 }
 
 func Verify(transaction Transaction) bool {
-	return internal.VerifySignature(transaction.Input.Address, []byte(transaction.OutputString()), []byte(transaction.Input.Signature))
+	return internal.VerifySignature(transaction.Input.Address, []byte(transaction.String()), []byte(transaction.Input.Signature))
 }
