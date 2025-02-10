@@ -111,14 +111,16 @@ func ForEachAction[K any, V any](items []K, v *V, fn func(v *V, k K)) {
 	}
 }
 
-func Select[K any, V any](item K, fn func(f *K) V) V {
-
-	return fn(&item)
-}
-func SelectMany[K any, V any](items []K, fn func(f *K) V) []V {
+func Flatten[K any, V any](items []K, fn func(f *K) []V) []V {
 	var ret []V
-	for _, i := range items {
-		ret = append(ret, fn(&i))
+	for _, v := range items {
+		ret = append(ret, fn(&v)...)
 	}
 	return ret
+}
+
+func Flattened[K any, V any](items []K, m *map[string]V, fn func(f *K, m *map[string]V)) {
+	for _, v := range items {
+		fn(&v, m)
+	}
 }

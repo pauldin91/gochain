@@ -54,15 +54,15 @@ func (w Wallet) CalculateBalance(chain Blockchain) float64 {
 		address:   w.keyPair.GetPublicKey(),
 	}
 
-	filtered := internal.FilterBy(totalTransactions, v, findByAddressAndTimestamp)
 	filteredOutputs := make(map[string]Input)
-	for _, i := range filtered {
-		for _, o := range i.Output {
-			if o.Address == w.keyPair.GetPublicKey() {
-				filteredOutputs[o.Address] = o
+	internal.Flattened(totalTransactions, &filteredOutputs, func(t *Transaction, m *map[string]Input) {
+		for _, i := range t.Output {
+			if i.Address == v.address && t.Input.Timestamp.After(v.timestamp) {
+				filteredOutputs[i.Address] = i
 			}
 		}
-	}
+	})
+
 	for _, b := range filteredOutputs {
 		balance += b.Amount
 	}

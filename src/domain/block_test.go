@@ -53,9 +53,10 @@ func TestMineBlock(t *testing.T) {
 	if !strings.HasPrefix(mined.Hash, strings.Repeat("0", int(genesisBlock.Difficulty))) {
 		t.Errorf("Difficulty was %d while output was %s", genesisBlock.Difficulty, mined.Hash)
 	}
-	genesisBlock.Difficulty = 4
+	genesisBlock.Difficulty = 5
+	time.Sleep(time.Second * 4)
 	mined = mineBlock(genesisBlock, "")
-	if !strings.HasPrefix(mined.Hash, strings.Repeat("0", int(genesisBlock.Difficulty))) {
+	if !strings.HasPrefix(mined.Hash, strings.Repeat("0", int(genesisBlock.Difficulty-1))) {
 		t.Errorf("Difficulty was %d while output was %s", genesisBlock.Difficulty, mined.Hash)
 	}
 	genesisBlock.Difficulty = 0
