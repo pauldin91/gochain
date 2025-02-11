@@ -18,7 +18,7 @@ func (t Transaction) String() string {
 	jsonT, _ := json.Marshal(t)
 	return string(jsonT)
 }
-func transactionWithOutputs(senderWallet *Wallet, outputs []Input) Transaction {
+func transactionWithOutputs(senderWallet Wallet, outputs []Input) Transaction {
 	transaction := Transaction{
 		Id: uuid.New(),
 	}
@@ -34,7 +34,7 @@ func transactionWithOutputs(senderWallet *Wallet, outputs []Input) Transaction {
 	return transaction
 }
 
-func NewTransaction(senderWallet *Wallet, recipient string, amount float64) *Transaction {
+func NewTransaction(senderWallet Wallet, recipient string, amount float64) *Transaction {
 	if amount > senderWallet.balance {
 		return nil
 	}
@@ -46,7 +46,7 @@ func NewTransaction(senderWallet *Wallet, recipient string, amount float64) *Tra
 	return &created
 }
 
-func (t *Transaction) Update(senderWallet *Wallet, recipientAddress string, amount float64) {
+func (t *Transaction) Update(senderWallet Wallet, recipientAddress string, amount float64) {
 	senderOutput := t.Output[senderWallet.address]
 	if amount > senderOutput.Amount {
 		log.Printf("amount %0.8f exceeds balance %0.8f", amount, senderWallet.balance)

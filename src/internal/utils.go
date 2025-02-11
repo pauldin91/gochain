@@ -6,7 +6,6 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
-	"crypto/x509"
 	"encoding/base64"
 	"encoding/hex"
 	"log"
@@ -15,31 +14,21 @@ import (
 
 type KeyPair struct {
 	keyPair *ecdsa.PrivateKey
+	private string
+	public  string
 }
 
 // NewKeyPair generates a new key pair safely
 func NewKeyPair() *KeyPair {
-	pair, err := genKeyPair()
-	if err != nil {
-		return nil
-	}
-	return &KeyPair{keyPair: pair}
+	var newKeyPair = KeyPair{}
+	pair := genKeyPair(&newKeyPair.private, &newKeyPair.public)
+	newKeyPair.keyPair = pair
+	return &newKeyPair
 }
 
 // GetPublicKey returns the base64-encoded public key
 func (pair *KeyPair) GetPublicKey() string {
-	if pair.keyPair == nil {
-		return ""
-	}
-
-	pub, err := x509.MarshalPKIXPublicKey(&pair.keyPair.PublicKey)
-	if err != nil {
-		return ""
-	}
-
-	// Encode in Base64 to ensure correct string format
-	public := base64.StdEncoding.EncodeToString(pub)
-	return public
+	return pair.public
 }
 
 func (pair *KeyPair) Sign(hashedData string) string {
@@ -52,24 +41,46 @@ func (pair *KeyPair) Sign(hashedData string) string {
 }
 
 func VerifySignature(publicKey string, hashed []byte, sig []byte) bool {
-	keyBytes, _ := base64.StdEncoding.DecodeString(publicKey)
+	// Decode the base64-encoded public key
+	keyBytes, err := base64.StdEncoding.DecodeString(publicKey)
+	if err != nil {
+		return false
+	}
 
-	half := len(keyBytes) / 2
-	x := new(big.Int).SetBytes(keyBytes[:half])
-	y := new(big.Int).SetBytes(keyBytes[half:])
+	// Ensure keyBytes length is even and sufficient for P-256 (32 bytes each for X and Y)
+	if len(keyBytes) != 64 {
+		return false
+	}
 
+	// Split keyBytes into X and Y coordinates
+	x := new(big.Int).SetBytes(keyBytes[:32])
+	y := new(big.Int).SetBytes(keyBytes[32:])
+
+	// Construct ECDSA public key
 	pubKey := &ecdsa.PublicKey{
-		Curve: elliptic.P256(), // Change if needed
+		Curve: elliptic.P256(), // Ensure curve is correct
 		X:     x,
 		Y:     y,
 	}
 
-	return ecdsa.VerifyASN1(pubKey, hashed, sig)
+	// Verify the signature
+	valid := ecdsa.VerifyASN1(pubKey, hashed, sig)
+	return valid
 }
 
-func genKeyPair() (private *ecdsa.PrivateKey, err error) {
-	pair, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	return pair, err
+func genKeyPair(priv, pub *string) *ecdsa.PrivateKey {
+	// Generate a new private key
+	privKey, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+
+	// Convert private key to base64
+	privKeyBytes := privKey.D.Bytes()
+	*priv = base64.StdEncoding.EncodeToString(privKeyBytes)
+
+	// Convert public key (X || Y) to base64
+	pubKeyBytes := append(privKey.PublicKey.X.Bytes(), privKey.PublicKey.Y.Bytes()...)
+	*pub = base64.StdEncoding.EncodeToString(pubKeyBytes)
+
+	return privKey
 }
 
 func Hash(data string) string {

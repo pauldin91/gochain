@@ -27,7 +27,7 @@ func (t Input) String() string {
 	return string(res)
 }
 
-func (t *Input) sign(wallet *Wallet) {
+func (t *Input) sign(wallet Wallet) {
 	t.Signature = wallet.keyPair.Sign(internal.Hash(t.String()))
 }
 

@@ -19,13 +19,13 @@ func (w Wallet) String() string {
 	return string(jsonWallet)
 }
 
-func NewWallet(init float64) *Wallet {
+func NewWallet(init float64) Wallet {
 	res := Wallet{
 		balance: init,
 		keyPair: internal.NewKeyPair(),
 	}
 	res.address = res.keyPair.GetPublicKey()
-	return &res
+	return res
 }
 
 func (w Wallet) ToString() string {
@@ -70,7 +70,7 @@ func (w Wallet) CalculateBalance(chain Blockchain) float64 {
 	return balance
 }
 
-func (w *Wallet) CreateTransaction(recipient string, amount float64, blockchain Blockchain, pool *TransactionPool) bool {
+func (w Wallet) CreateTransaction(recipient string, amount float64, blockchain Blockchain, pool *TransactionPool) bool {
 
 	w.balance = w.CalculateBalance(blockchain)
 	if amount > w.balance || amount <= 0.0 {
