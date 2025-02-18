@@ -83,6 +83,4 @@ func (w Wallet) CreateTransaction(recipient string, amount float64, blockchain B
 
 }
 
-func Verify(transaction Transaction) bool {
-	return internal.VerifySignature(transaction.Input.Address, []byte(transaction.String()), []byte(transaction.Input.Signature))
-}
+

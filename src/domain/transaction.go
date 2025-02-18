@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/pauldin91/gochain/src/internal"
 )
 
 type Transaction struct {
@@ -30,8 +31,13 @@ func transactionWithOutputs(senderWallet Wallet, outputs []Input) Transaction {
 	transaction.Input.Address = senderWallet.keyPair.GetPublicKey()
 	transaction.Input.Amount = senderWallet.balance
 	transaction.Input.Timestamp = time.Now().UTC()
-	transaction.Input.sign(senderWallet)
+	transaction.sign(senderWallet)
 	return transaction
+}
+
+func (t *Transaction) sign(wallet Wallet) {
+	outs, _ := json.Marshal(&t.Output)
+	t.Input.Signature = wallet.keyPair.Sign(internal.Hash(string(outs)))
 }
 
 func NewTransaction(senderWallet Wallet, recipient string, amount float64) *Transaction {
@@ -58,6 +64,12 @@ func (t *Transaction) Update(senderWallet Wallet, recipientAddress string, amoun
 		Amount:    amount,
 		Address:   recipientAddress,
 	}
-	newlyAdded.sign(senderWallet)
+	t.sign(senderWallet)
 	t.Output[newlyAdded.Address] = newlyAdded
+}
+
+func Verify(transaction Transaction) bool {
+	outs, _ := json.Marshal(transaction.Output)
+	var tsString string = internal.Hash(string(outs))
+	return internal.VerifySignature(transaction.Input.Address, []byte(tsString), []byte(transaction.Input.Signature))
 }

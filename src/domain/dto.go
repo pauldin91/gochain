@@ -3,8 +3,6 @@ package domain
 import (
 	"encoding/json"
 	"time"
-
-	"github.com/pauldin91/gochain/src/internal"
 )
 
 type Input struct {
@@ -25,10 +23,6 @@ func (i Input) GetAddress() string {
 func (t Input) String() string {
 	res, _ := json.Marshal(t)
 	return string(res)
-}
-
-func (t *Input) sign(wallet Wallet) {
-	t.Signature = wallet.keyPair.Sign(internal.Hash(t.String()))
 }
 
 type TimestampAddressFilter struct {

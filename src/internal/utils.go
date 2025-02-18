@@ -84,8 +84,8 @@ func genKeyPair(priv, pub *string) *ecdsa.PrivateKey {
 }
 
 func Hash(data string) string {
-	result := sha256.Sum256([]byte(data))
-	return hex.EncodeToString(result[:])
+	hash := sha256.Sum256([]byte(data))
+	return hex.EncodeToString(hash[:])
 }
 
 func FilterBy[K any, V any](items []K, v V, predicate func(K, V) bool) []K {
