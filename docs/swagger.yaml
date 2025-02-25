@@ -1,4 +1,24 @@
 definitions:
+  app.BalanceResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  domain.Block:
+    properties:
+      data:
+        type: string
+      difficulty:
+        type: integer
+      hash:
+        type: string
+      last_hash:
+        type: string
+      nonce:
+        type: integer
+      timestamp:
+        type: string
+    type: object
   domain.Input:
     properties:
       address:
@@ -26,6 +46,36 @@ definitions:
 info:
   contact: {}
 paths:
+  /balance:
+    get:
+      description: Retrieves the balance of a wallet
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/app.BalanceResponse'
+            type: array
+      summary: Get balance
+      tags:
+      - balance
+  /blocks:
+    post:
+      description: Creates a block
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Block'
+            type: array
+      summary: Creates a block
+      tags:
+      - blocks
   /mine:
     get:
       description: Mines transaction
@@ -37,6 +87,17 @@ paths:
       summary: Mine transaction
       tags:
       - mine
+  /public-key:
+    get:
+      description: Retrieves the address of a wallet
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get balance
+      tags:
+      - public-key
   /transactions:
     get:
       description: Gets transactions

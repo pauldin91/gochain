@@ -15,6 +15,52 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/balance": {
+            "get": {
+                "description": "Retrieves the balance of a wallet",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "balance"
+                ],
+                "summary": "Get balance",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/app.BalanceResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/blocks": {
+            "post": {
+                "description": "Creates a block",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "blocks"
+                ],
+                "summary": "Creates a block",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Block"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/mine": {
             "get": {
                 "description": "Mines transaction",
@@ -25,6 +71,23 @@ const docTemplate = `{
                     "mine"
                 ],
                 "summary": "Mine transaction",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/public-key": {
+            "get": {
+                "description": "Retrieves the address of a wallet",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "public-key"
+                ],
+                "summary": "Get balance",
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -78,6 +141,37 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "app.BalanceResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Block": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "difficulty": {
+                    "type": "integer"
+                },
+                "hash": {
+                    "type": "string"
+                },
+                "last_hash": {
+                    "type": "string"
+                },
+                "nonce": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Input": {
             "type": "object",
             "properties": {

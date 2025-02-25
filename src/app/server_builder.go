@@ -38,8 +38,9 @@ func (sb *ServerBuilder) WithRouter() *ServerBuilder {
 	sb.Server.router = chi.NewRouter()
 	sb.Server.router.Get("/swagger/*", httpSwagger.WrapHandler)
 	sb.Server.router.Get(balanceEndpoint, balanceHandler)
-	sb.Server.router.Post(blockEndpoint, sb.Server.blockHandler)
+	sb.Server.router.Post(blockEndpoint, blockHandler)
 	sb.Server.router.Get(mineEndpoint, mineHandler)
+	sb.Server.router.Get(publickeyEndpoint, publicKeyHandler)
 	sb.Server.router.Get(transactionsEndpoint, getTransactionsHandler)
 	sb.Server.router.Post(transactionsEndpoint, createTransactionHandler)
 	return sb
