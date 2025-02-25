@@ -40,16 +40,16 @@ func (t *Transaction) sign(wallet Wallet) {
 	t.Input.Signature = wallet.keyPair.Sign(internal.Hash(string(outs)))
 }
 
-func NewTransaction(senderWallet Wallet, recipient string, amount float64) *Transaction {
+func NewTransaction(senderWallet Wallet, recipient string, amount float64) Transaction {
 	if amount > senderWallet.balance {
-		return nil
+		return Transaction{}
 	}
 	outputs := []Input{
 		{Amount: senderWallet.balance - amount, Address: senderWallet.keyPair.GetPublicKey(), Timestamp: time.Now().UTC()},
 		{Amount: amount, Address: recipient, Timestamp: time.Now().UTC()},
 	}
 	var created Transaction = transactionWithOutputs(senderWallet, outputs)
-	return &created
+	return created
 }
 
 func (t *Transaction) Update(senderWallet Wallet, recipientAddress string, amount float64) {

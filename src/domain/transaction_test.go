@@ -27,7 +27,7 @@ func TestNewTransaction(t *testing.T) {
 }
 
 func TestVerifyTransaction(t *testing.T) {
-	res := Verify(*transaction)
+	res := Verify(transaction)
 	if !res {
 		t.Error("Valid transaction should be validated")
 	}
@@ -36,7 +36,7 @@ func TestVerifyTransaction(t *testing.T) {
 	copy.Amount = 30000
 	transaction.Output[recipientWallet.address] = copy
 
-	res = Verify(*transaction)
+	res = Verify(transaction)
 	if res {
 		t.Error("invalid transaction should be invalidated")
 	}
