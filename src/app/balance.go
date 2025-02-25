@@ -9,6 +9,14 @@ type BalanceResponse struct {
 	Message string `json:"message"`
 }
 
+// balanceHandler retrieves the balance for a given wallet
+// @Summary      Get balance
+// @Description  Retrieves the balance of a wallet
+// @Tags         balance
+// @Produce      json
+// @Success      200  {array}   BalanceResponse
+// @Router       /balance [get]
+
 func balanceHandler(w http.ResponseWriter, req *http.Request) {
 
 	response := BalanceResponse{

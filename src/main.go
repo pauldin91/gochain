@@ -1,8 +1,6 @@
 package main
 
-import (
-	"github.com/pauldin91/gochain/src/app"
-)
+import "github.com/pauldin91/gochain/src/app"
 
 func main() {
 	s := app.ServerBuilder{&app.HttpServer{}}

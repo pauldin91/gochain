@@ -1,0 +1,69 @@
+definitions:
+  domain.Input:
+    properties:
+      address:
+        type: string
+      amount:
+        type: number
+      signature:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  domain.Transaction:
+    properties:
+      amount:
+        type: number
+      id:
+        type: string
+      input:
+        $ref: '#/definitions/domain.Input'
+      output:
+        additionalProperties:
+          $ref: '#/definitions/domain.Input'
+        type: object
+    type: object
+info:
+  contact: {}
+paths:
+  /mine:
+    get:
+      description: Mines transaction
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Mine transaction
+      tags:
+      - mine
+  /transactions:
+    get:
+      description: Gets transactions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Transaction'
+            type: array
+      summary: Gets transactions
+      tags:
+      - transactions
+    post:
+      description: Creates a transaction in the pool
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Transaction'
+            type: array
+      summary: Create transaction
+      tags:
+      - transactions
+swagger: "2.0"

@@ -12,7 +12,7 @@ import (
 )
 
 type Server interface {
-	WithConfig()
+	Start()
 }
 
 type HttpServer struct {
@@ -22,9 +22,9 @@ type HttpServer struct {
 }
 
 func (s *HttpServer) Start() {
-
 	certFile := filepath.Join(s.cfg.CertPath, s.cfg.CertFile)
 	certKey := filepath.Join(s.cfg.CertPath, s.cfg.CertKey)
+
 	if _, err := os.Stat(certFile); os.IsNotExist(err) {
 		log.Fatal("unable to load certs")
 	}
@@ -34,30 +34,38 @@ func (s *HttpServer) Start() {
 		Handler: s.router,
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+	// Run HTTP server in a goroutine
+	go func() {
+		log.Printf("INFO: HTTP server started on %s\n", s.cfg.HttpServerAddress)
+		if err := server.ListenAndServeTLS(certFile, certKey); err != nil {
+			log.Fatal("Could not start HTTP server:", err)
+		}
+	}()
+
+	// WebSocket handling via Chi router
+	s.router.HandleFunc("/ws", func(w http.ResponseWriter, req *http.Request) {
 		upgrader := websocket.Upgrader{
 			ReadBufferSize:  int(s.cfg.WsReadLimit),
 			WriteBufferSize: int(s.cfg.WsWriteLimit),
 		}
 		ws, err := upgrader.Upgrade(w, req, nil)
 		if err != nil {
-			log.Printf("could not establish a connection with %s", ws.RemoteAddr())
+			log.Printf("WebSocket upgrade failed: %v", err)
+			return
 		}
 
 		ws.SetReadLimit(s.cfg.WsReadLimit)
+
+		if s.p2p == nil {
+			s.p2p = &WsServer{}
+		}
+
 		s.p2p.sockets = append(s.p2p.sockets, ws)
 		s.p2p.broadcast(chain.Chain)
 	})
 
-	err := server.ListenAndServeTLS(certFile, certKey)
-	if err != nil {
-		log.Fatal("Could not start server")
+	log.Printf("INFO: WS server started on %s\n", s.cfg.WsServerAddress)
+	if err := http.ListenAndServeTLS(s.cfg.WsServerAddress, certFile, certKey, nil); err != nil {
+		log.Fatal("Could not start WebSocket server:", err)
 	}
-	log.Printf("INFO : http server starter on %s\n", s.cfg.HttpServerAddress)
-	err = http.ListenAndServeTLS(s.cfg.WsServerAddress, certFile, certKey, nil)
-	if err != nil {
-		log.Fatal("Could not start ws server", err)
-	}
-	log.Printf("INFO : ws server starter on %s\n", s.cfg.WsServerAddress)
 }
-
