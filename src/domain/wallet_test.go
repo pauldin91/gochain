@@ -3,17 +3,7 @@ package domain
 import (
 	"encoding/json"
 	"testing"
-
-	"github.com/pauldin91/gochain/src/internal"
 )
-
-func blockchainWallet() Wallet {
-	return Wallet{
-		balance: 30.0,
-		keyPair: internal.NewKeyPair(),
-		address: "hakuna-mattata",
-	}
-}
 
 var tp = TransactionPool{}
 var bc = Create()
@@ -70,8 +60,4 @@ func TestBalance(t *testing.T) {
 
 	}
 	tp.Clear()
-}
-
-func TestVerify(t *testing.T) {
-
 }

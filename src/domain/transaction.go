@@ -13,13 +13,14 @@ type Transaction struct {
 	Id     uuid.UUID        `json:"id"`
 	Input  Input            `json:"input"`
 	Output map[string]Input `json:"output"`
+	Amount float64          `json:"amount"`
 }
 
 func (t Transaction) String() string {
 	jsonT, _ := json.Marshal(t)
 	return string(jsonT)
 }
-func transactionWithOutputs(senderWallet Wallet, outputs []Input) Transaction {
+func transactionWithOutputs(senderWallet Wallet, outputs []Input, amount float64) Transaction {
 	transaction := Transaction{
 		Id: uuid.New(),
 	}
@@ -28,6 +29,7 @@ func transactionWithOutputs(senderWallet Wallet, outputs []Input) Transaction {
 
 		transaction.Output[o.Address] = o
 	}
+	transaction.Amount = amount
 	transaction.Input.Address = senderWallet.keyPair.GetPublicKey()
 	transaction.Input.Amount = senderWallet.balance
 	transaction.Input.Timestamp = time.Now().UTC()
@@ -40,16 +42,16 @@ func (t *Transaction) sign(wallet Wallet) {
 	t.Input.Signature = wallet.keyPair.Sign(internal.Hash(string(outs)))
 }
 
-func NewTransaction(senderWallet Wallet, recipient string, amount float64) Transaction {
-	if amount > senderWallet.balance {
-		return Transaction{}
+func NewTransaction(senderWallet Wallet, recipient string, amount float64) *Transaction {
+	if amount > senderWallet.balance || amount <= 0 {
+		return nil
 	}
 	outputs := []Input{
 		{Amount: senderWallet.balance - amount, Address: senderWallet.keyPair.GetPublicKey(), Timestamp: time.Now().UTC()},
 		{Amount: amount, Address: recipient, Timestamp: time.Now().UTC()},
 	}
-	var created Transaction = transactionWithOutputs(senderWallet, outputs)
-	return created
+	var created Transaction = transactionWithOutputs(senderWallet, outputs, amount)
+	return &created
 }
 
 func (t *Transaction) Update(senderWallet Wallet, recipientAddress string, amount float64) {

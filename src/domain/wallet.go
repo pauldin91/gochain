@@ -77,10 +77,8 @@ func (w Wallet) CreateTransaction(recipient string, amount float64, blockchain B
 		return false
 	} else {
 		transaction := NewTransaction(w, recipient, amount)
-		pool.AddOrUpdateById(transaction)
+		pool.AddOrUpdateById(*transaction)
 		return true
 	}
 
 }
-
-

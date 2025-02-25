@@ -4,6 +4,10 @@ type TransactionPool struct {
 	transactions []Transaction
 }
 
+func (p *TransactionPool) Size() int {
+	return len(p.transactions)
+}
+
 func (p *TransactionPool) AddOrUpdateById(transaction Transaction) {
 	var t *Transaction = nil
 	for i, tr := range p.transactions {
@@ -12,15 +16,15 @@ func (p *TransactionPool) AddOrUpdateById(transaction Transaction) {
 			break
 		}
 	}
-	if t == nil {
+	if t == nil && transaction.Amount > 0 {
 		p.transactions = append(p.transactions, transaction)
 	}
 
 }
 
-func (p *TransactionPool) TransactionByAddress(address string) *Transaction {
+func (p *TransactionPool) TransactionById(id string) *Transaction {
 	for _, t := range p.transactions {
-		if t.Input.Address == address {
+		if t.Id.String() == id {
 			return &t
 		}
 	}
