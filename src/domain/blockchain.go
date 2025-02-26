@@ -6,29 +6,20 @@ import (
 	"github.com/pauldin91/gochain/src/internal"
 )
 
-type BlockchainDto struct {
-	Chain []string `json:"chain"`
-}
-
 type Blockchain struct {
 	Chain []Block
 }
 
-func (bc Blockchain) String() string {
-	var bcs []string
-	for _, b := range bc.Chain {
-		js, _ := json.Marshal(b)
-		bcs = append(bcs, string(js))
-	}
-	res, _ := json.Marshal(BlockchainDto{Chain: bcs})
-	return string(res)
+func (bc *Blockchain) String() string {
+	js, _ := json.Marshal(bc.Chain)
+	return string(js)
 
 }
 
-func Create() Blockchain {
+func Create() *Blockchain {
 	bc := Blockchain{}
 	bc.Chain = append(bc.Chain, genesis())
-	return bc
+	return &bc
 }
 
 func (bc *Blockchain) AddBlock(data string) Block {

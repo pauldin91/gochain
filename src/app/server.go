@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -8,8 +9,28 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/websocket"
+	"github.com/pauldin91/gochain/src/domain"
 	"github.com/pauldin91/gochain/src/internal"
 )
+
+type ErrorResponse struct {
+	Error   string `json:"error"`
+	Message string `json:"message"`
+}
+
+func writeErrorResponse(w http.ResponseWriter, statusCode int, errMsg string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+
+	response := ErrorResponse{
+		Error:   http.StatusText(statusCode),
+		Message: errMsg,
+	}
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Printf("Error encoding JSON response: %v", err)
+	}
+}
 
 type Server interface {
 	Start()
@@ -17,6 +38,7 @@ type Server interface {
 
 type HttpServer struct {
 	cfg    internal.Config
+	chain  *domain.Blockchain
 	router *chi.Mux
 	p2p    *WsServer
 }

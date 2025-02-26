@@ -7,6 +7,7 @@ import (
 	_ "github.com/pauldin91/gochain/docs"
 	httpSwagger "github.com/swaggo/http-swagger"
 
+	"github.com/pauldin91/gochain/src/domain"
 	"github.com/pauldin91/gochain/src/internal"
 )
 
@@ -16,7 +17,9 @@ type ServerBuilder struct {
 
 func NewServerBuilder() *ServerBuilder {
 	return &ServerBuilder{
-		Server: &HttpServer{},
+		Server: &HttpServer{
+			chain: domain.Create(),
+		},
 	}
 }
 
@@ -38,7 +41,7 @@ func (sb *ServerBuilder) WithRouter() *ServerBuilder {
 	sb.Server.router = chi.NewRouter()
 	sb.Server.router.Get("/swagger/*", httpSwagger.WrapHandler)
 	sb.Server.router.Get(balanceEndpoint, balanceHandler)
-	sb.Server.router.Post(blockEndpoint, blockHandler)
+	sb.Server.router.Get(blockEndpoint, sb.Server.blockHandler)
 	sb.Server.router.Get(mineEndpoint, mineHandler)
 	sb.Server.router.Get(publickeyEndpoint, publicKeyHandler)
 	sb.Server.router.Get(transactionsEndpoint, getTransactionsHandler)

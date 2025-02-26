@@ -3,7 +3,7 @@ package main
 import "github.com/pauldin91/gochain/src/app"
 
 func main() {
-	s := app.ServerBuilder{&app.HttpServer{}}
+	s := app.NewServerBuilder()
 
 	httpServer := s.
 		WithConfig(".").

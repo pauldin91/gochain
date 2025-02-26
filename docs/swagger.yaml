@@ -4,19 +4,14 @@ definitions:
       message:
         type: string
     type: object
-  domain.Block:
+  app.BlockDto:
     properties:
       data:
         type: string
-      difficulty:
-        type: integer
-      hash:
-        type: string
-      last_hash:
-        type: string
-      nonce:
-        type: integer
-      timestamp:
+    type: object
+  app.BlockchainDto:
+    properties:
+      chain:
         type: string
     type: object
   domain.Input:
@@ -62,7 +57,7 @@ paths:
       tags:
       - balance
   /blocks:
-    post:
+    get:
       description: Creates a block
       produces:
       - application/json
@@ -70,9 +65,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/domain.Block'
-            type: array
+            $ref: '#/definitions/app.BlockchainDto'
       summary: Creates a block
       tags:
       - blocks
@@ -84,6 +77,8 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/app.BlockDto'
       summary: Mine transaction
       tags:
       - mine

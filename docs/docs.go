@@ -39,7 +39,7 @@ const docTemplate = `{
             }
         },
         "/blocks": {
-            "post": {
+            "get": {
                 "description": "Creates a block",
                 "produces": [
                     "application/json"
@@ -52,10 +52,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.Block"
-                            }
+                            "$ref": "#/definitions/app.BlockchainDto"
                         }
                     }
                 }
@@ -73,7 +70,10 @@ const docTemplate = `{
                 "summary": "Mine transaction",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.BlockDto"
+                        }
                     }
                 }
             }
@@ -149,25 +149,18 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.Block": {
+        "app.BlockDto": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "string"
-                },
-                "difficulty": {
-                    "type": "integer"
-                },
-                "hash": {
-                    "type": "string"
-                },
-                "last_hash": {
-                    "type": "string"
-                },
-                "nonce": {
-                    "type": "integer"
-                },
-                "timestamp": {
+                }
+            }
+        },
+        "app.BlockchainDto": {
+            "type": "object",
+            "properties": {
+                "chain": {
                     "type": "string"
                 }
             }
