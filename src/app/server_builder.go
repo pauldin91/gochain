@@ -37,15 +37,26 @@ func (sb *ServerBuilder) WithWsServer() *ServerBuilder {
 	return sb
 }
 
+func (sb *ServerBuilder) WithPool() *ServerBuilder {
+	sb.Server.pool = &domain.TransactionPool{}
+	return sb
+}
+
+func (sb *ServerBuilder) WithWallet() *ServerBuilder {
+	wallet := domain.NewWallet(0.0)
+	sb.Server.wallet = &wallet
+	return sb
+}
+
 func (sb *ServerBuilder) WithRouter() *ServerBuilder {
 	sb.Server.router = chi.NewRouter()
 	sb.Server.router.Get("/swagger/*", httpSwagger.WrapHandler)
 	sb.Server.router.Get(balanceEndpoint, balanceHandler)
 	sb.Server.router.Get(blockEndpoint, sb.Server.blockHandler)
 	sb.Server.router.Post(mineEndpoint, sb.Server.mineHandler)
-	sb.Server.router.Get(publickeyEndpoint, publicKeyHandler)
-	sb.Server.router.Get(transactionsEndpoint, getTransactionsHandler)
-	sb.Server.router.Post(transactionsEndpoint, createTransactionHandler)
+	sb.Server.router.Get(publickeyEndpoint, sb.Server.publicKeyHandler)
+	sb.Server.router.Get(transactionsEndpoint, sb.Server.getTransactionsHandler)
+	sb.Server.router.Post(transactionsEndpoint, sb.Server.createTransactionHandler)
 	return sb
 }
 

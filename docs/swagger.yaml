@@ -29,6 +29,11 @@ definitions:
       chain:
         type: string
     type: object
+  app.WalletDto:
+    properties:
+      address:
+        type: string
+    type: object
   domain.Input:
     properties:
       address:
@@ -120,6 +125,8 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/app.WalletDto'
       summary: Get balance
       tags:
       - public-key

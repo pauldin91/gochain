@@ -113,7 +113,10 @@ const docTemplate = `{
                 "summary": "Get balance",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.WalletDto"
+                        }
                     }
                 }
             }
@@ -207,6 +210,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "chain": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.WalletDto": {
+            "type": "object",
+            "properties": {
+                "address": {
                     "type": "string"
                 }
             }

@@ -1,29 +1,29 @@
 package domain
 
 type TransactionPool struct {
-	transactions []Transaction
+	Transactions []Transaction
 }
 
 func (p *TransactionPool) Size() int {
-	return len(p.transactions)
+	return len(p.Transactions)
 }
 
 func (p *TransactionPool) AddOrUpdateById(transaction Transaction) {
 	var t *Transaction = nil
-	for i, tr := range p.transactions {
+	for i, tr := range p.Transactions {
 		if tr.Id == transaction.Id {
-			p.transactions[i] = transaction
+			p.Transactions[i] = transaction
 			break
 		}
 	}
 	if t == nil && transaction.Amount > 0 {
-		p.transactions = append(p.transactions, transaction)
+		p.Transactions = append(p.Transactions, transaction)
 	}
 
 }
 
 func (p *TransactionPool) TransactionById(id string) *Transaction {
-	for _, t := range p.transactions {
+	for _, t := range p.Transactions {
 		if t.Id.String() == id {
 			return &t
 		}
@@ -33,7 +33,7 @@ func (p *TransactionPool) TransactionById(id string) *Transaction {
 
 func (p *TransactionPool) ValidTransactions() []Transaction {
 	var transactions []Transaction
-	for _, t := range p.transactions {
+	for _, t := range p.Transactions {
 		transaction := filter(t)
 		if transaction != nil {
 			transactions = append(transactions, *transaction)
@@ -42,7 +42,7 @@ func (p *TransactionPool) ValidTransactions() []Transaction {
 	return transactions
 }
 func (p *TransactionPool) Clear() {
-	p.transactions = []Transaction{}
+	p.Transactions = []Transaction{}
 }
 
 func filter(transaction Transaction) *Transaction {

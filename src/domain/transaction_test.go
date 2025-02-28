@@ -3,7 +3,7 @@ package domain
 import "testing"
 
 var amount float64 = 10.0
-var transaction = NewTransaction(senderWallet, recipientWallet.address, amount)
+var transaction = NewTransaction(senderWallet, recipientWallet.Address, amount)
 
 func TestNewTransaction(t *testing.T) {
 
@@ -11,17 +11,17 @@ func TestNewTransaction(t *testing.T) {
 		t.Error("Transaction output length is always 2")
 	}
 
-	sender, ex := transaction.Output[senderWallet.address]
+	sender, ex := transaction.Output[senderWallet.Address]
 	if !ex ||
 		sender.Amount != senderWallet.balance-amount ||
-		sender.Address != senderWallet.address {
+		sender.Address != senderWallet.Address {
 		t.Error("Invalid sender transaction")
 	}
 
-	recipient, ex := transaction.Output[recipientWallet.address]
+	recipient, ex := transaction.Output[recipientWallet.Address]
 	if !ex ||
 		recipient.Amount != recipientWallet.balance+amount ||
-		recipient.Address != recipientWallet.address {
+		recipient.Address != recipientWallet.Address {
 		t.Error("Invalid recipient transaction")
 	}
 }
@@ -31,10 +31,10 @@ func TestVerifyTransaction(t *testing.T) {
 	if !res {
 		t.Error("Valid transaction should be validated")
 	}
-	var copy Input = transaction.Output[recipientWallet.address]
+	var copy Input = transaction.Output[recipientWallet.Address]
 
 	copy.Amount = 30000
-	transaction.Output[recipientWallet.address] = copy
+	transaction.Output[recipientWallet.Address] = copy
 
 	res = Verify(*transaction)
 	if res {

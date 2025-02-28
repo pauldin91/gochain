@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"net/http"
 )
 
@@ -9,8 +10,13 @@ import (
 // @Description  Retrieves the address of a wallet
 // @Tags         public-key
 // @Produce      json
-// @Success      200
+// @Success      200 {object} WalletDto
 // @Router       /public-key [get]
-func publicKeyHandler(writer http.ResponseWriter, req *http.Request) {
+func (s *HttpServer) publicKeyHandler(writer http.ResponseWriter, req *http.Request) {
+	wallet := WalletDto{
+		Address: s.wallet.Address,
+	}
 
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(wallet)
 }

@@ -23,9 +23,9 @@ var testAmounts = []struct {
 
 func TestCreateTransaction(t *testing.T) {
 
-	executed := senderWallet.CreateTransaction(recipientWallet.address, testAmounts[0].amount, *bc, &tp)
-	if len(tp.transactions) != 1 || !executed {
-		t.Errorf("should have %d but have %d\n", 1, len(tp.transactions))
+	executed := senderWallet.CreateTransaction(recipientWallet.Address, testAmounts[0].amount, *bc, &tp)
+	if len(tp.Transactions) != 1 || !executed {
+		t.Errorf("should have %d but have %d\n", 1, len(tp.Transactions))
 	}
 	tp.Clear()
 }
@@ -35,7 +35,7 @@ func TestBalance(t *testing.T) {
 	var senderBalance float64 = senderWallet.balance
 	var recipientBalance float64 = recipientWallet.balance
 	for _, ta := range testAmounts {
-		executed := senderWallet.CreateTransaction(recipientWallet.address, ta.amount, *bc, &tp)
+		executed := senderWallet.CreateTransaction(recipientWallet.Address, ta.amount, *bc, &tp)
 		if executed != ta.shouldBeExecuted {
 			t.Errorf("test with amount %0.8f it was supposed to %v while got %v", ta.amount, ta.shouldBeExecuted, executed)
 			continue
@@ -43,7 +43,7 @@ func TestBalance(t *testing.T) {
 			continue
 		}
 
-		jsonTransactions, _ := json.Marshal(tp.transactions)
+		jsonTransactions, _ := json.Marshal(tp.Transactions)
 
 		bc.AddBlock(string(jsonTransactions))
 

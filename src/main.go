@@ -7,6 +7,8 @@ func main() {
 
 	httpServer := s.
 		WithConfig(".").
+		WithWallet().
+		WithPool().
 		WithRouter().
 		WithWsServer().
 		Build()

@@ -19,6 +19,37 @@ type BlockchainDto struct {
 type BlockRequestDto struct {
 	Data string `json:"data"`
 }
+
+type WalletDto struct {
+	Address string `json:"address"`
+}
+
+type PoolDto struct {
+	Dtos []TransactionResponseDto `json:"dtos"`
+}
+
+type TransactionRequestDto struct {
+	Recipient string  `json:"recipient"`
+	Amount    float64 `json:"amount"`
+}
+
+type TransactionResponseDto struct {
+	Data string `json:"data"`
+}
+
+func (t *TransactionResponseDto) Map(tr *domain.Transaction) {
+	t.Data = tr.String()
+}
+
+func (pool *PoolDto) Map(tp *domain.TransactionPool) {
+	for _, t := range tp.Transactions {
+		tr := &TransactionResponseDto{
+			Data: t.String(),
+		}
+		pool.Dtos = append(pool.Dtos, *tr)
+	}
+}
+
 type BlockResponseDto struct {
 	Timestamp  time.Time `json:"timestamp"`
 	LastHash   string    `json:"last_hash"`

@@ -21,6 +21,9 @@ type HttpServer struct {
 	chain  *domain.Blockchain
 	router *chi.Mux
 	p2p    *WsServer
+	wallet *domain.Wallet
+	pool   *domain.TransactionPool
+	miner  *domain.Miner
 }
 
 func (s *HttpServer) Start() {

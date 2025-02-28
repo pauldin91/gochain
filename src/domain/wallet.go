@@ -12,7 +12,7 @@ import (
 type Wallet struct {
 	balance float64 `json:"balance"`
 	keyPair *internal.KeyPair
-	address string `json:"address"`
+	Address string `json:"address"`
 }
 
 func (w Wallet) String() string {
@@ -25,7 +25,7 @@ func NewWallet(init float64) Wallet {
 		balance: init,
 		keyPair: internal.NewKeyPair(),
 	}
-	res.address = res.keyPair.GetPublicKey()
+	res.Address = res.keyPair.GetPublicKey()
 	return res
 }
 

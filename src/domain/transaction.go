@@ -9,6 +9,10 @@ import (
 	"github.com/pauldin91/gochain/src/internal"
 )
 
+const (
+	MINING_REWARD float64 = 3000
+)
+
 type Transaction struct {
 	Id     uuid.UUID        `json:"id"`
 	Input  Input            `json:"input"`
@@ -55,7 +59,7 @@ func NewTransaction(senderWallet Wallet, recipient string, amount float64) *Tran
 }
 
 func (t *Transaction) Update(senderWallet Wallet, recipientAddress string, amount float64) {
-	senderOutput := t.Output[senderWallet.address]
+	senderOutput := t.Output[senderWallet.Address]
 	if amount > senderOutput.Amount {
 		log.Printf("amount %0.8f exceeds balance %0.8f", amount, senderWallet.balance)
 		return
@@ -74,4 +78,13 @@ func Verify(transaction Transaction) bool {
 	outs, _ := json.Marshal(transaction.Output)
 	var tsString string = internal.Hash(string(outs))
 	return internal.VerifySignature(transaction.Input.Address, []byte(tsString), []byte(transaction.Input.Signature))
+}
+
+func Reward(minerWallet *Wallet, blockchainWallet *Wallet) *Transaction {
+	outputs := []Input{
+		{Amount: MINING_REWARD, Address: minerWallet.Address, Timestamp: time.Now().UTC()},
+	}
+	tr := transactionWithOutputs(*blockchainWallet, outputs, MINING_REWARD)
+
+	return &tr
 }

@@ -20,7 +20,7 @@ func TestAddTransactionToThePool(t *testing.T) {
 		t.Error("invalid input in the transaction")
 	}
 
-	if tt.Output[senderWallet.address].String() != transaction.Output[senderWallet.address].String() {
+	if tt.Output[senderWallet.Address].String() != transaction.Output[senderWallet.Address].String() {
 		t.Error("Inputs dont much")
 	}
 
@@ -33,7 +33,7 @@ func TestAddTransactionToThePool(t *testing.T) {
 }
 
 func TestValidTransactions(t *testing.T) {
-	var t1 = NewTransaction(senderWallet, recipientWallet.address, 100)
+	var t1 = NewTransaction(senderWallet, recipientWallet.Address, 100)
 	var t2 = *t1
 	t2.Amount = -100
 	t2.Id = uuid.New()
