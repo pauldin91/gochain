@@ -4,9 +4,24 @@ definitions:
       message:
         type: string
     type: object
-  app.BlockDto:
+  app.BlockRequestDto:
     properties:
       data:
+        type: string
+    type: object
+  app.BlockResponseDto:
+    properties:
+      data:
+        type: string
+      difficulty:
+        type: integer
+      hash:
+        type: string
+      last_hash:
+        type: string
+      nonce:
+        type: integer
+      timestamp:
         type: string
     type: object
   app.BlockchainDto:
@@ -58,7 +73,7 @@ paths:
       - balance
   /blocks:
     get:
-      description: Creates a block
+      description: Gets the blockchain
       produces:
       - application/json
       responses:
@@ -66,20 +81,35 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/app.BlockchainDto'
-      summary: Creates a block
+      summary: Gets the blockchain
       tags:
       - blocks
   /mine:
-    get:
-      description: Mines transaction
+    post:
+      consumes:
+      - application/json
+      description: Mines a new block and adds it to the blockchain
+      parameters:
+      - description: Block Request Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/app.BlockRequestDto'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/app.BlockDto'
-      summary: Mine transaction
+            $ref: '#/definitions/app.BlockResponseDto'
+        "400":
+          description: Invalid request data
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Mine a block
       tags:
       - mine
   /public-key:

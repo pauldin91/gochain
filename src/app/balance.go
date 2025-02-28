@@ -5,10 +5,6 @@ import (
 	"net/http"
 )
 
-type BalanceResponse struct {
-	Message string `json:"message"`
-}
-
 // balanceHandler retrieves the balance for a given wallet
 // @Summary      Get balance
 // @Description  Retrieves the balance of a wallet

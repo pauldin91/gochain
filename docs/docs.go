@@ -40,14 +40,14 @@ const docTemplate = `{
         },
         "/blocks": {
             "get": {
-                "description": "Creates a block",
+                "description": "Gets the blockchain",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "blocks"
                 ],
-                "summary": "Creates a block",
+                "summary": "Gets the blockchain",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -59,20 +59,43 @@ const docTemplate = `{
             }
         },
         "/mine": {
-            "get": {
-                "description": "Mines transaction",
+            "post": {
+                "description": "Mines a new block and adds it to the blockchain",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "mine"
                 ],
-                "summary": "Mine transaction",
+                "summary": "Mine a block",
+                "parameters": [
+                    {
+                        "description": "Block Request Data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/app.BlockRequestDto"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/app.BlockDto"
+                            "$ref": "#/definitions/app.BlockResponseDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request data",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -149,10 +172,33 @@ const docTemplate = `{
                 }
             }
         },
-        "app.BlockDto": {
+        "app.BlockRequestDto": {
             "type": "object",
             "properties": {
                 "data": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.BlockResponseDto": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "difficulty": {
+                    "type": "integer"
+                },
+                "hash": {
+                    "type": "string"
+                },
+                "last_hash": {
+                    "type": "string"
+                },
+                "nonce": {
+                    "type": "integer"
+                },
+                "timestamp": {
                     "type": "string"
                 }
             }
