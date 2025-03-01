@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/gorilla/websocket"
-	"github.com/pauldin91/gochain/src/domain"
 	"github.com/pauldin91/gochain/src/internal"
 )
 
@@ -18,15 +16,10 @@ type Server interface {
 
 type HttpServer struct {
 	cfg    internal.Config
-	chain  *domain.Blockchain
 	router *chi.Mux
-	p2p    *WsServer
-	wallet *domain.Wallet
-	pool   *domain.TransactionPool
-	miner  *domain.Miner
 }
 
-func (s *HttpServer) Start() {
+func (s *HttpServer) Start(peer *Peer) {
 	certFile := filepath.Join(s.cfg.CertPath, s.cfg.CertFile)
 	certKey := filepath.Join(s.cfg.CertPath, s.cfg.CertKey)
 
@@ -48,29 +41,21 @@ func (s *HttpServer) Start() {
 	}()
 
 	// WebSocket handling via Chi router
-	s.router.HandleFunc("/ws", func(w http.ResponseWriter, req *http.Request) {
-		upgrader := websocket.Upgrader{
-			ReadBufferSize:  int(s.cfg.WsReadLimit),
-			WriteBufferSize: int(s.cfg.WsWriteLimit),
-		}
-		ws, err := upgrader.Upgrade(w, req, nil)
-		if err != nil {
-			log.Printf("WebSocket upgrade failed: %v", err)
-			return
-		}
-
-		ws.SetReadLimit(s.cfg.WsReadLimit)
-
-		if s.p2p == nil {
-			s.p2p = &WsServer{}
-		}
-
-		s.p2p.sockets = append(s.p2p.sockets, ws)
-		s.p2p.broadcast(chain.Chain)
-	})
+	s.router.HandleFunc("/ws", peer.listen)
 
 	log.Printf("INFO: WS server started on %s\n", s.cfg.WsServerAddress)
 	if err := http.ListenAndServeTLS(s.cfg.WsServerAddress, certFile, certKey, nil); err != nil {
 		log.Fatal("Could not start WebSocket server:", err)
 	}
+}
+
+func (s *HttpServer) AddPost(endpoint string, handler http.HandlerFunc) *HttpServer {
+	s.router.Post(endpoint, handler)
+	return s
+
+}
+
+func (s *HttpServer) AddGet(endpoint string, handler http.HandlerFunc) *HttpServer {
+	s.router.Get(endpoint, handler)
+	return s
 }

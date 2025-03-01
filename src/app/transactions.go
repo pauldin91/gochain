@@ -14,7 +14,7 @@ import (
 // @Produce      json
 // @Success      200  {object} PoolDto
 // @Router       /transactions [get]
-func (s *HttpServer) getTransactionsHandler(writer http.ResponseWriter, req *http.Request) {
+func (s *Peer) getTransactionsHandler(writer http.ResponseWriter, req *http.Request) {
 	tp := PoolDto{}
 	tp.Map(s.pool)
 	writer.WriteHeader(http.StatusOK)
@@ -28,7 +28,7 @@ func (s *HttpServer) getTransactionsHandler(writer http.ResponseWriter, req *htt
 // @Produce      json
 // @Success      200
 // @Router       /transactions [post]
-func (s *HttpServer) createTransactionHandler(writer http.ResponseWriter, req *http.Request) {
+func (s *Peer) createTransactionHandler(writer http.ResponseWriter, req *http.Request) {
 	t := TransactionRequestDto{}
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&t)
@@ -38,4 +38,20 @@ func (s *HttpServer) createTransactionHandler(writer http.ResponseWriter, req *h
 	}
 	s.wallet.CreateTransaction(t.Recipient, t.Amount, *s.chain, s.pool)
 	writer.WriteHeader(http.StatusCreated)
+}
+
+// mines a transaction
+// @Summary      mines transaction
+// @Description  mines a transaction in the pool
+// @Tags         transactions
+// @Produce      json
+// @Success      200
+// @Router       /transactions/mine [post]
+func (s *Peer) mineTransactionHandler(writer http.ResponseWriter, req *http.Request) {
+	block := s.mine()
+	dto := BlockResponseDto{}
+	dto.Map(block)
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(dto)
+
 }

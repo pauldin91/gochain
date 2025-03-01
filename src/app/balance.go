@@ -12,7 +12,7 @@ import (
 // @Produce      json
 // @Success      200  {array}   BalanceResponse
 // @Router       /balance [get]
-func balanceHandler(w http.ResponseWriter, req *http.Request) {
+func (p *Peer) balanceHandler(w http.ResponseWriter, req *http.Request) {
 
 	response := BalanceResponse{
 		Message: "balance is 0",

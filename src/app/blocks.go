@@ -12,7 +12,7 @@ import (
 // @Produce      json
 // @Success      200 {object} BlockchainDto
 // @Router       /blocks [get]
-func (s *HttpServer) blockHandler(writer http.ResponseWriter, req *http.Request) {
+func (s *Peer) blockHandler(writer http.ResponseWriter, req *http.Request) {
 	chain := BlockchainDto{}
 	chain.Map(*s.chain)
 	writer.Header().Set("Content-Type", "application/json")
@@ -30,7 +30,7 @@ func (s *HttpServer) blockHandler(writer http.ResponseWriter, req *http.Request)
 // @Success      200 {object} BlockResponseDto
 // @Failure      400 {object} map[string]string "Invalid request data"
 // @Router       /mine [post]
-func (s *HttpServer) mineHandler(writer http.ResponseWriter, req *http.Request) {
+func (s *Peer) mineBlockHandler(writer http.ResponseWriter, req *http.Request) {
 	block := BlockRequestDto{}
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&block)

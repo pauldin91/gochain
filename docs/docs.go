@@ -110,7 +110,7 @@ const docTemplate = `{
                 "tags": [
                     "public-key"
                 ],
-                "summary": "Get balance",
+                "summary": "Get public key",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -135,10 +135,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.Transaction"
-                            }
+                            "$ref": "#/definitions/app.PoolDto"
                         }
                     }
                 }
@@ -154,13 +151,24 @@ const docTemplate = `{
                 "summary": "Create transaction",
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.Transaction"
-                            }
-                        }
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/transactions/mine": {
+            "post": {
+                "description": "mines a transaction in the pool",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "mines transaction",
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     }
                 }
             }
@@ -214,48 +222,30 @@ const docTemplate = `{
                 }
             }
         },
+        "app.PoolDto": {
+            "type": "object",
+            "properties": {
+                "dtos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/app.TransactionResponseDto"
+                    }
+                }
+            }
+        },
+        "app.TransactionResponseDto": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                }
+            }
+        },
         "app.WalletDto": {
             "type": "object",
             "properties": {
                 "address": {
                     "type": "string"
-                }
-            }
-        },
-        "domain.Input": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "amount": {
-                    "type": "number"
-                },
-                "signature": {
-                    "type": "string"
-                },
-                "timestamp": {
-                    "type": "string"
-                }
-            }
-        },
-        "domain.Transaction": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "input": {
-                    "$ref": "#/definitions/domain.Input"
-                },
-                "output": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/domain.Input"
-                    }
                 }
             }
         }

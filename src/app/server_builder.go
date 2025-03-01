@@ -7,19 +7,19 @@ import (
 	_ "github.com/pauldin91/gochain/docs"
 	httpSwagger "github.com/swaggo/http-swagger"
 
-	"github.com/pauldin91/gochain/src/domain"
 	"github.com/pauldin91/gochain/src/internal"
 )
 
 type ServerBuilder struct {
 	Server *HttpServer
+	peer   *Peer
 }
 
-func NewServerBuilder() *ServerBuilder {
+func NewServerBuilder(peer *Peer) *ServerBuilder {
+
 	return &ServerBuilder{
-		Server: &HttpServer{
-			chain: domain.Create(),
-		},
+		Server: &HttpServer{},
+		peer:   peer,
 	}
 }
 
@@ -32,34 +32,20 @@ func (sb *ServerBuilder) WithConfig(settings string) *ServerBuilder {
 	return sb
 }
 
-func (sb *ServerBuilder) WithWsServer() *ServerBuilder {
-	sb.Server.p2p = &WsServer{}
-	return sb
-}
-
-func (sb *ServerBuilder) WithPool() *ServerBuilder {
-	sb.Server.pool = &domain.TransactionPool{}
-	return sb
-}
-
-func (sb *ServerBuilder) WithWallet() *ServerBuilder {
-	wallet := domain.NewWallet(0.0)
-	sb.Server.wallet = &wallet
-	return sb
-}
-
 func (sb *ServerBuilder) WithRouter() *ServerBuilder {
 	sb.Server.router = chi.NewRouter()
-	sb.Server.router.Get("/swagger/*", httpSwagger.WrapHandler)
-	sb.Server.router.Get(balanceEndpoint, balanceHandler)
-	sb.Server.router.Get(blockEndpoint, sb.Server.blockHandler)
-	sb.Server.router.Post(mineEndpoint, sb.Server.mineHandler)
-	sb.Server.router.Get(publickeyEndpoint, sb.Server.publicKeyHandler)
-	sb.Server.router.Get(transactionsEndpoint, sb.Server.getTransactionsHandler)
-	sb.Server.router.Post(transactionsEndpoint, sb.Server.createTransactionHandler)
+
 	return sb
 }
 
 func (sb *ServerBuilder) Build() *HttpServer {
-	return sb.Server
+	return sb.Server.
+		AddGet(blockEndpoint, sb.peer.blockHandler).
+		AddGet(balanceEndpoint, sb.peer.balanceHandler).
+		AddGet(publickeyEndpoint, sb.peer.publicKeyHandler).
+		AddGet(swaggerDocsEndpoint, httpSwagger.WrapHandler).
+		AddGet(transactionsEndpoint, sb.peer.getTransactionsHandler).
+		AddPost(mineBlockEndpoint, sb.peer.mineBlockHandler).
+		AddPost(transactionsEndpoint, sb.peer.createTransactionHandler).
+		AddPost(mineTransactionsEndpoint, sb.peer.mineTransactionHandler)
 }

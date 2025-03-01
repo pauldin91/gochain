@@ -5,14 +5,14 @@ import (
 	"net/http"
 )
 
-// balanceHandler retrieves the address for a given wallet
-// @Summary      Get balance
+// retrieves the address for a given wallet
+// @Summary      Get public key
 // @Description  Retrieves the address of a wallet
 // @Tags         public-key
 // @Produce      json
 // @Success      200 {object} WalletDto
 // @Router       /public-key [get]
-func (s *HttpServer) publicKeyHandler(writer http.ResponseWriter, req *http.Request) {
+func (s *Peer) publicKeyHandler(writer http.ResponseWriter, req *http.Request) {
 	wallet := WalletDto{
 		Address: s.wallet.Address,
 	}

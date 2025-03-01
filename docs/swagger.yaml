@@ -29,34 +29,22 @@ definitions:
       chain:
         type: string
     type: object
+  app.PoolDto:
+    properties:
+      dtos:
+        items:
+          $ref: '#/definitions/app.TransactionResponseDto'
+        type: array
+    type: object
+  app.TransactionResponseDto:
+    properties:
+      data:
+        type: string
+    type: object
   app.WalletDto:
     properties:
       address:
         type: string
-    type: object
-  domain.Input:
-    properties:
-      address:
-        type: string
-      amount:
-        type: number
-      signature:
-        type: string
-      timestamp:
-        type: string
-    type: object
-  domain.Transaction:
-    properties:
-      amount:
-        type: number
-      id:
-        type: string
-      input:
-        $ref: '#/definitions/domain.Input'
-      output:
-        additionalProperties:
-          $ref: '#/definitions/domain.Input'
-        type: object
     type: object
 info:
   contact: {}
@@ -127,7 +115,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/app.WalletDto'
-      summary: Get balance
+      summary: Get public key
       tags:
       - public-key
   /transactions:
@@ -139,9 +127,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/domain.Transaction'
-            type: array
+            $ref: '#/definitions/app.PoolDto'
       summary: Gets transactions
       tags:
       - transactions
@@ -152,11 +138,18 @@ paths:
       responses:
         "200":
           description: OK
-          schema:
-            items:
-              $ref: '#/definitions/domain.Transaction'
-            type: array
       summary: Create transaction
+      tags:
+      - transactions
+  /transactions/mine:
+    post:
+      description: mines a transaction in the pool
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: mines transaction
       tags:
       - transactions
 swagger: "2.0"

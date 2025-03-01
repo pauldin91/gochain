@@ -3,15 +3,18 @@ package main
 import "github.com/pauldin91/gochain/src/app"
 
 func main() {
-	s := app.NewServerBuilder()
+	peer := (&app.PeerBuilder{}).
+		WithChain().
+		WithConfig(".").
+		WithPeerServer().
+		Build()
+
+	s := app.NewServerBuilder(peer)
 
 	httpServer := s.
 		WithConfig(".").
-		WithWallet().
-		WithPool().
 		WithRouter().
-		WithWsServer().
 		Build()
 
-	httpServer.Start()
+	httpServer.Start(peer)
 }
