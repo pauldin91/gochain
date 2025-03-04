@@ -10,7 +10,7 @@
         {
             "label": "build-project",
             "type": "shell",
-            "command": "go build -o main src/main.go",
+            "command": "mkdir -p build && go build -o build/main src/main.go",
             "dependsOn": ["build-docs"],
             "group": {
                 "kind": "build",
