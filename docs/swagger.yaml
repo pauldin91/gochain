@@ -36,6 +36,13 @@ definitions:
           $ref: '#/definitions/app.TransactionResponseDto'
         type: array
     type: object
+  app.TransactionRequestDto:
+    properties:
+      amount:
+        type: number
+      recipient:
+        type: string
+    type: object
   app.TransactionResponseDto:
     properties:
       data:
@@ -133,6 +140,13 @@ paths:
       - transactions
     post:
       description: Creates a transaction in the pool
+      parameters:
+      - description: Transaction Request Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/app.TransactionRequestDto'
       produces:
       - application/json
       responses:

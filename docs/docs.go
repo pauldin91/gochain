@@ -149,6 +149,17 @@ const docTemplate = `{
                     "transactions"
                 ],
                 "summary": "Create transaction",
+                "parameters": [
+                    {
+                        "description": "Transaction Request Data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/app.TransactionRequestDto"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -230,6 +241,17 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/app.TransactionResponseDto"
                     }
+                }
+            }
+        },
+        "app.TransactionRequestDto": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "recipient": {
+                    "type": "string"
                 }
             }
         },

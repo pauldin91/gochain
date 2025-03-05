@@ -53,6 +53,9 @@ func filter(transaction Transaction) *Transaction {
 	if transaction.Input.Amount != totalOutput {
 		return nil
 	}
+	if !Verify(transaction) {
+		return nil
+	}
 
 	return &transaction
 

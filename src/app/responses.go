@@ -16,6 +16,11 @@ type BalanceResponse struct {
 type BlockchainDto struct {
 	Chain string `json:"chain"`
 }
+
+func (b *BlockchainDto) MapFrom(bc *domain.Blockchain) {
+	b.Chain = bc.String()
+}
+
 type BlockRequestDto struct {
 	Data string `json:"data"`
 }
@@ -37,7 +42,7 @@ type TransactionResponseDto struct {
 	Data string `json:"data"`
 }
 
-func (t *TransactionResponseDto) Map(tr *domain.Transaction) {
+func (t *TransactionResponseDto) MapFrom(tr *domain.Transaction) {
 	t.Data = tr.String()
 }
 

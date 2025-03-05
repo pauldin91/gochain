@@ -18,19 +18,39 @@ type Peer struct {
 	cfg    internal.Config
 }
 
-
-
 func (ner *Peer) mine() domain.Block {
 	validTransactions := ner.pool.ValidTransactions()
 	validTransactions = append(validTransactions, *domain.Reward(ner.wallet, ner.wallet))
 
 	data, _ := json.Marshal(validTransactions)
 	block := ner.chain.AddBlock(string(data))
+
+	ner.syncChains()
+	ner.pool.Clear()
+	ner.broadcast(ner.chain.Chain)
+
 	return block
+}
+
+func (ner *Peer) broadcast(chain []domain.Block) {
+	for _, ws := range ner.p2p.sockets {
+		err := ws.WriteJSON(chain)
+		if err != nil {
+			log.Println("error writing", err)
+		}
+	}
 }
 
 func (ner *Peer) Clear() {
 	ner.pool.Clear()
+}
+
+func (ner *Peer) syncChains() {
+
+	chain, _ := json.Marshal(ner.chain)
+	for _, s := range ner.p2p.sockets {
+		s.WriteJSON(string(chain))
+	}
 }
 
 func (peer *Peer) listen(w http.ResponseWriter, req *http.Request) {
@@ -51,5 +71,5 @@ func (peer *Peer) listen(w http.ResponseWriter, req *http.Request) {
 	}
 
 	peer.p2p.sockets = append(peer.p2p.sockets, ws)
-	peer.p2p.broadcast(chain.Chain)
+	peer.broadcast(chain.Chain)
 }

@@ -26,6 +26,7 @@ func (s *Peer) getTransactionsHandler(writer http.ResponseWriter, req *http.Requ
 // @Description  Creates a transaction in the pool
 // @Tags         transactions
 // @Produce      json
+// @Param        request body TransactionRequestDto true "Transaction Request Data"
 // @Success      200
 // @Router       /transactions [post]
 func (s *Peer) createTransactionHandler(writer http.ResponseWriter, req *http.Request) {

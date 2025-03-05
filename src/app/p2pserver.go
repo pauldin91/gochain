@@ -15,15 +15,6 @@ type WsServer struct {
 	peers   string
 }
 
-func (s *WsServer) broadcast(chain []domain.Block) {
-	for _, ws := range s.sockets {
-		err := ws.WriteJSON(chain)
-		if err != nil {
-			log.Println("error writing", err)
-		}
-	}
-}
-
 func (s *WsServer) connectToPeers() {
 
 	for _, p := range strings.Split(s.peers, ",") {
