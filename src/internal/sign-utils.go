@@ -37,7 +37,7 @@ func (pair *KeyPair) Sign(hashedData string) string {
 	if err != nil {
 		log.Fatal("could sign data")
 	}
-	return base64.StdEncoding.EncodeToString(res)
+	return string(res)
 }
 
 func VerifySignature(publicKey string, hashed []byte, sig []byte) bool {
