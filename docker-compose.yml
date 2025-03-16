@@ -1,0 +1,15 @@
+services:
+  gochain:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "5443:5443"
+    environment:
+      - PEERS=""
+    networks:
+      - gochain
+
+networks:
+    gochain:
+      driver: bridge
