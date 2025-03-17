@@ -10,16 +10,16 @@ import (
 	"github.com/pauldin91/gochain/src/internal"
 )
 
-type Server interface {
+type Application interface {
 	Start()
 }
 
-type HttpServer struct {
+type HttpApplication struct {
 	cfg    internal.Config
 	router *chi.Mux
 }
 
-func (s *HttpServer) Start(peer *Peer) {
+func (s *HttpApplication) Start(peer *Peer) {
 	certFile := filepath.Join(s.cfg.CertPath, s.cfg.CertFile)
 	certKey := filepath.Join(s.cfg.CertPath, s.cfg.CertKey)
 
@@ -49,13 +49,13 @@ func (s *HttpServer) Start(peer *Peer) {
 	}
 }
 
-func (s *HttpServer) AddPost(endpoint string, handler http.HandlerFunc) *HttpServer {
+func (s *HttpApplication) AddPost(endpoint string, handler http.HandlerFunc) *HttpApplication {
 	s.router.Post(endpoint, handler)
 	return s
 
 }
 
-func (s *HttpServer) AddGet(endpoint string, handler http.HandlerFunc) *HttpServer {
+func (s *HttpApplication) AddGet(endpoint string, handler http.HandlerFunc) *HttpApplication {
 	s.router.Get(endpoint, handler)
 	return s
 }

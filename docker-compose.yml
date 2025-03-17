@@ -5,6 +5,7 @@ services:
       dockerfile: dockerfile
     ports:
       - "5443:5443"
+      - "6443:6443"
     environment:
       - PEERS=""
     networks:

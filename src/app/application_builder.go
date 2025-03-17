@@ -10,36 +10,36 @@ import (
 	"github.com/pauldin91/gochain/src/internal"
 )
 
-type ServerBuilder struct {
-	Server *HttpServer
-	peer   *Peer
+type WebApplicationBuilder struct {
+	app  *HttpApplication
+	peer *Peer
 }
 
-func NewServerBuilder(peer *Peer) *ServerBuilder {
+func NewServerBuilder(peer *Peer) *WebApplicationBuilder {
 
-	return &ServerBuilder{
-		Server: &HttpServer{},
-		peer:   peer,
+	return &WebApplicationBuilder{
+		app:  &HttpApplication{},
+		peer: peer,
 	}
 }
 
-func (sb *ServerBuilder) WithConfig(settings string) *ServerBuilder {
+func (sb *WebApplicationBuilder) WithConfig(settings string) *WebApplicationBuilder {
 	cfg, err := internal.LoadConfig(settings)
 	if err != nil {
 		log.Fatal("unable to load config")
 	}
-	sb.Server.cfg = cfg
+	sb.app.cfg = cfg
 	return sb
 }
 
-func (sb *ServerBuilder) WithRouter() *ServerBuilder {
-	sb.Server.router = chi.NewRouter()
+func (sb *WebApplicationBuilder) WithRouter() *WebApplicationBuilder {
+	sb.app.router = chi.NewRouter()
 
 	return sb
 }
 
-func (sb *ServerBuilder) Build() *HttpServer {
-	return sb.Server.
+func (sb *WebApplicationBuilder) Build() *HttpApplication {
+	return sb.app.
 		AddGet(blockEndpoint, sb.peer.blockHandler).
 		AddGet(balanceEndpoint, sb.peer.balanceHandler).
 		AddGet(publickeyEndpoint, sb.peer.publicKeyHandler).

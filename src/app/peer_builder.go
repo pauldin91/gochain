@@ -39,5 +39,8 @@ func (b *PeerBuilder) WithPeerServer() *PeerBuilder {
 }
 
 func (b *PeerBuilder) Build() *Peer {
+	if b.peer.cfg.Peers != "" {
+		b.peer.p2p.connectToPeers(b.peer.cfg.Peers)
+	}
 	return b.peer
 }
