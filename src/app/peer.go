@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -69,7 +70,7 @@ func (peer *Peer) listen(w http.ResponseWriter, req *http.Request) {
 	if peer.p2p == nil {
 		peer.p2p = &WsServer{}
 	}
-
-	peer.p2p.sockets = append(peer.p2p.sockets, ws)
+	clientId := fmt.Sprintf("%p", ws)
+	peer.p2p.sockets[clientId] = ws
 	peer.broadcast(chain.Chain)
 }

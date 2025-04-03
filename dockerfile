@@ -1,4 +1,4 @@
-FROM golang:1.23.1 AS build
+FROM golang:1.24 AS build
 
 WORKDIR /application
 
@@ -15,8 +15,7 @@ WORKDIR /application
 COPY --from=build /application/* .
 
 COPY certificates ./certificates
-
-EXPOSE 5443
+COPY docs ./docs
 
 CMD ["./main"]
 

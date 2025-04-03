@@ -3,6 +3,7 @@ package app
 import (
 	"log"
 
+	"github.com/gorilla/websocket"
 	"github.com/pauldin91/gochain/src/domain"
 	"github.com/pauldin91/gochain/src/internal"
 )
@@ -33,7 +34,10 @@ func (b *PeerBuilder) WithConfig(settings string) *PeerBuilder {
 }
 
 func (b *PeerBuilder) WithPeerServer() *PeerBuilder {
-	b.peer.p2p = &WsServer{}
+	b.peer.p2p = &WsServer{
+		sockets: make(map[string]*websocket.Conn),
+	}
+	go b.peer.p2p.connectToPeers(b.peer.cfg.Peers)
 	return b
 
 }

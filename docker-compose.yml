@@ -1,5 +1,5 @@
 services:
-  gochain:
+  gochain1:
     build:
       context: .
       dockerfile: dockerfile
@@ -8,8 +8,43 @@ services:
       - "6443:6443"
     environment:
       - PEERS=""
+      - HTTP_SERVER_ADDRESS=0.0.0.0:5443
+      - WS_SERVER_ADDRESS=0.0.0.0:6443
     networks:
       - gochain
+    
+
+  gochain2:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "5444:5444"
+      - "6444:6444"
+    environment:
+      - PEERS=wss://gochain1:6443/ws
+      - HTTP_SERVER_ADDRESS=0.0.0.0:5444
+      - WS_SERVER_ADDRESS=0.0.0.0:6444
+    networks:
+      - gochain
+    depends_on:
+      - gochain1
+
+  gochain3:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "5445:5445"
+      - "6445:6445"
+    environment:
+      - PEERS=wss://gochain2:6444/ws
+      - HTTP_SERVER_ADDRESS=0.0.0.0:5445
+      - WS_SERVER_ADDRESS=0.0.0.0:6445
+    networks:
+      - gochain
+    depends_on:
+      - gochain2
 
 networks:
     gochain:

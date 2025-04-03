@@ -41,7 +41,7 @@ func (s *HttpApplication) Start(peer *Peer) {
 	}()
 
 	// WebSocket handling via Chi router
-	s.router.HandleFunc("/ws", peer.listen)
+	s.router.HandleFunc("/ws", peer.p2p.wsHandler)
 
 	log.Printf("INFO: WS server started on %s\n", s.cfg.WsServerAddress)
 	if err := http.ListenAndServeTLS(s.cfg.WsServerAddress, certFile, certKey, nil); err != nil {
