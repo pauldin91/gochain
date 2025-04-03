@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pauldin91/gochain/src/generic"
 	"github.com/pauldin91/gochain/src/utils"
 )
 
@@ -41,11 +40,11 @@ func (w Wallet) CalculateBalance(chain Blockchain) float64 {
 		_ = json.Unmarshal([]byte(b.Data), &transactions)
 		totalTransactions = append(totalTransactions, transactions...)
 	}
-	walletInputTs := generic.FilterBy(totalTransactions, w.keyPair.GetPublicKey(), findTransactionByAddress)
+	walletInputTs := utils.FilterBy(totalTransactions, w.keyPair.GetPublicKey(), findTransactionByAddress)
 
 	var start time.Time
 	if len(walletInputTs) > 0 {
-		recentInputT := generic.Aggregate(walletInputTs, maxByTimestamp)
+		recentInputT := utils.Aggregate(walletInputTs, maxByTimestamp)
 		balance = recentInputT.Output[w.keyPair.GetPublicKey()].Amount
 		start = recentInputT.Input.Timestamp
 	}
@@ -56,7 +55,7 @@ func (w Wallet) CalculateBalance(chain Blockchain) float64 {
 	}
 
 	filteredOutputs := make(map[string]Input)
-	generic.SelectMany(totalTransactions, &filteredOutputs, func(t *Transaction, m *map[string]Input) {
+	utils.SelectMany(totalTransactions, &filteredOutputs, func(t *Transaction, m *map[string]Input) {
 		for _, i := range t.Output {
 			if i.Address == v.address && t.Input.Timestamp.After(v.timestamp) {
 				filteredOutputs[i.Address] = i

@@ -101,6 +101,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/peers": {
+            "get": {
+                "description": "Retrieves the hello from world",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "peers"
+                ],
+                "summary": "Get hello world",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.ConnectedPeersResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/public-key": {
             "get": {
                 "description": "Retrieves the address of a wallet",
@@ -230,6 +250,17 @@ const docTemplate = `{
             "properties": {
                 "chain": {
                     "type": "string"
+                }
+            }
+        },
+        "app.ConnectedPeersResponse": {
+            "type": "object",
+            "properties": {
+                "peers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             }
         },

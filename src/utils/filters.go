@@ -1,4 +1,4 @@
-package generic
+package utils
 
 func FilterBy[K any, V any](items []K, v V, predicate func(K, V) bool) []K {
 	var filtered []K

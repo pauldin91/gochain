@@ -29,6 +29,13 @@ definitions:
       chain:
         type: string
     type: object
+  app.ConnectedPeersResponse:
+    properties:
+      peers:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
   app.PoolDto:
     properties:
       dtos:
@@ -112,6 +119,19 @@ paths:
       summary: Mine a block
       tags:
       - mine
+  /peers:
+    get:
+      description: Retrieves the hello from world
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.ConnectedPeersResponse'
+      summary: Get hello world
+      tags:
+      - peers
   /public-key:
     get:
       description: Retrieves the address of a wallet
