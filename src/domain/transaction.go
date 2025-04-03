@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/pauldin91/gochain/src/internal"
+	"github.com/pauldin91/gochain/src/utils"
 )
 
 const (
@@ -43,7 +43,7 @@ func transactionWithOutputs(senderWallet Wallet, outputs []Input, amount float64
 
 func (t *Transaction) sign(wallet Wallet) {
 	outs, _ := json.Marshal(&t.Output)
-	t.Input.Signature = wallet.keyPair.Sign(internal.Hash(string(outs)))
+	t.Input.Signature = wallet.keyPair.Sign(utils.Hash(string(outs)))
 }
 
 func NewTransaction(senderWallet Wallet, recipient string, amount float64) *Transaction {
@@ -76,8 +76,8 @@ func (t *Transaction) Update(senderWallet Wallet, recipientAddress string, amoun
 
 func Verify(transaction Transaction) bool {
 	outs, _ := json.Marshal(transaction.Output)
-	var tsString string = internal.Hash(string(outs))
-	return internal.VerifySignature(transaction.Input.Address, []byte(tsString), []byte(transaction.Input.Signature))
+	var tsString string = utils.Hash(string(outs))
+	return utils.VerifySignature(transaction.Input.Address, []byte(tsString), []byte(transaction.Input.Signature))
 }
 
 func Reward(minerWallet *Wallet, blockchainWallet *Wallet) *Transaction {

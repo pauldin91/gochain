@@ -12,9 +12,9 @@ import (
 // @Produce      json
 // @Success      200 {object} BlockchainDto
 // @Router       /blocks [get]
-func (s *Peer) blockHandler(writer http.ResponseWriter, req *http.Request) {
+func (s *HttpApplication) blockHandler(writer http.ResponseWriter, req *http.Request) {
 	chain := BlockchainDto{}
-	chain.Map(*s.chain)
+	chain.Map(*s.peer.chain)
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
 	json.NewEncoder(writer).Encode(chain)
@@ -30,7 +30,7 @@ func (s *Peer) blockHandler(writer http.ResponseWriter, req *http.Request) {
 // @Success      200 {object} BlockResponseDto
 // @Failure      400 {object} map[string]string "Invalid request data"
 // @Router       /mine [post]
-func (s *Peer) mineBlockHandler(writer http.ResponseWriter, req *http.Request) {
+func (s *HttpApplication) mineBlockHandler(writer http.ResponseWriter, req *http.Request) {
 	block := BlockRequestDto{}
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&block)
@@ -38,7 +38,7 @@ func (s *Peer) mineBlockHandler(writer http.ResponseWriter, req *http.Request) {
 		writeErrorResponse(writer, 400, "Invalid data")
 		return
 	}
-	addedBlock := s.chain.AddBlock(block.Data)
+	addedBlock := s.peer.chain.AddBlock(block.Data)
 	dto := &BlockResponseDto{}
 	dto.Map(addedBlock)
 	writer.WriteHeader(http.StatusOK)

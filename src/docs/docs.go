@@ -108,7 +108,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "hello"
+                    "peers"
                 ],
                 "summary": "Get hello world",
                 "responses": {

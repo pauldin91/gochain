@@ -14,11 +14,11 @@ import (
 // @Produce      json
 // @Success      200  {object} PoolDto
 // @Router       /transactions [get]
-func (s *Peer) getTransactionsHandler(writer http.ResponseWriter, req *http.Request) {
-	tp := PoolDto{}
-	tp.Map(s.pool)
-	writer.WriteHeader(http.StatusOK)
-	json.NewEncoder(writer).Encode(tp)
+func (s *HttpApplication) getTransactionsHandler(writer http.ResponseWriter, req *http.Request) {
+	// tp := PoolDto{}
+	// tp.Map(s.pool)
+	//writer.WriteHeader(http.StatusOK)
+	//json.NewEncoder(writer).Encode(tp)
 }
 
 // creates a transaction
@@ -29,7 +29,7 @@ func (s *Peer) getTransactionsHandler(writer http.ResponseWriter, req *http.Requ
 // @Param        request body TransactionRequestDto true "Transaction Request Data"
 // @Success      200
 // @Router       /transactions [post]
-func (s *Peer) createTransactionHandler(writer http.ResponseWriter, req *http.Request) {
+func (s *HttpApplication) createTransactionHandler(writer http.ResponseWriter, req *http.Request) {
 	t := TransactionRequestDto{}
 	decoder := json.NewDecoder(req.Body)
 	err := decoder.Decode(&t)
@@ -37,7 +37,7 @@ func (s *Peer) createTransactionHandler(writer http.ResponseWriter, req *http.Re
 		writeErrorResponse(writer, 400, "Invalid data")
 		return
 	}
-	s.wallet.CreateTransaction(t.Recipient, t.Amount, *s.chain, s.pool)
+	s.peer.wallet.CreateTransaction(t.Recipient, t.Amount, *s.peer.chain, s.peer.pool)
 	writer.WriteHeader(http.StatusCreated)
 }
 
@@ -48,8 +48,8 @@ func (s *Peer) createTransactionHandler(writer http.ResponseWriter, req *http.Re
 // @Produce      json
 // @Success      200
 // @Router       /transactions/mine [post]
-func (s *Peer) mineTransactionHandler(writer http.ResponseWriter, req *http.Request) {
-	block := s.mine()
+func (s *HttpApplication) mineTransactionHandler(writer http.ResponseWriter, req *http.Request) {
+	block := s.peer.mine()
 	dto := BlockResponseDto{}
 	dto.Map(block)
 	writer.WriteHeader(http.StatusOK)

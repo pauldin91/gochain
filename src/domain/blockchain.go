@@ -3,7 +3,7 @@ package domain
 import (
 	"encoding/json"
 
-	"github.com/pauldin91/gochain/src/internal"
+	"github.com/pauldin91/gochain/src/utils"
 )
 
 type Blockchain struct {
@@ -38,7 +38,7 @@ func IsValid(bc []Block) bool {
 		block := bc[i]
 		lastBlock := bc[i-1]
 		block.Hash = ""
-		expectedHash := internal.Hash(block.ToString())
+		expectedHash := utils.Hash(block.ToString())
 		block.Hash = bc[i].Hash
 		if block.LastHash != lastBlock.Hash ||
 			block.Hash != expectedHash {

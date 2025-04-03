@@ -131,7 +131,7 @@ paths:
             $ref: '#/definitions/app.ConnectedPeersResponse'
       summary: Get hello world
       tags:
-      - hello
+      - peers
   /public-key:
     get:
       description: Retrieves the address of a wallet

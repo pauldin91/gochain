@@ -12,9 +12,9 @@ import (
 // @Produce      json
 // @Success      200 {object} WalletDto
 // @Router       /public-key [get]
-func (s *Peer) publicKeyHandler(writer http.ResponseWriter, req *http.Request) {
+func (s *HttpApplication) publicKeyHandler(writer http.ResponseWriter, req *http.Request) {
 	wallet := WalletDto{
-		Address: s.wallet.Address,
+		Address: s.peer.wallet.Address,
 	}
 
 	writer.WriteHeader(http.StatusOK)
@@ -24,16 +24,16 @@ func (s *Peer) publicKeyHandler(writer http.ResponseWriter, req *http.Request) {
 // peerDiscoveryHandler retrieves hello from world
 // @Summary      Get hello world
 // @Description  Retrieves the hello from world
-// @Tags         hello
+// @Tags         peers
 // @Produce      json
 // @Success      200 {object}  ConnectedPeersResponse
 // @Router       /peers [get]
-func (s *Peer) peerDiscoveryHandler(w http.ResponseWriter, req *http.Request) {
+func (s *HttpApplication) peerDiscoveryHandler(w http.ResponseWriter, req *http.Request) {
 
 	var response ConnectedPeersResponse
 	response.Peers = make(map[string]string)
 
-	for k, v := range s.p2p.sockets {
+	for k, v := range s.ws.sockets {
 		response.Peers[k] = v.RemoteAddr().String()
 	}
 	// Set content type to JSON

@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/pauldin91/gochain/src/domain"
-	"github.com/pauldin91/gochain/src/internal"
+	"github.com/pauldin91/gochain/src/utils"
 )
 
 var chain domain.Blockchain
@@ -18,7 +18,7 @@ var chain domain.Blockchain
 type WsServer struct {
 	sockets map[string]*websocket.Conn
 	mutex   sync.Mutex
-	cfg     internal.Config
+	cfg     utils.Config
 }
 
 var upgrader = websocket.Upgrader{
@@ -60,7 +60,7 @@ func (ws *WsServer) wsHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			break
 		}
-		ws.broadcastMessage(fmt.Sprintf("fucker id %s says %s\n", clientID, string(p)))
+		ws.broadcastMessage(fmt.Sprintf("clientid %s says %s\n", clientID, string(p)))
 	}
 }
 

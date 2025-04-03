@@ -5,12 +5,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pauldin91/gochain/src/internal"
+	"github.com/pauldin91/gochain/src/utils"
 )
 
 var genesisLastHash = strings.Repeat("*", 32)
 
-var cfg, _ = internal.LoadConfig(".")
+var cfg, _ = utils.LoadConfig(".")
 
 type Block struct {
 	Timestamp  time.Time `json:"timestamp"`
@@ -27,7 +27,7 @@ func genesis() Block {
 		Nonce:    0,
 	}
 	block.Data = ""
-	block.Hash = internal.Hash(block.ToString())
+	block.Hash = utils.Hash(block.ToString())
 	return block
 }
 
@@ -75,7 +75,7 @@ func mineBlock(lastBlock Block, data string) Block {
 			LastHash:   lastBlock.Hash,
 			Data:       data,
 		}
-		hash = internal.Hash(copy.ToString())
+		hash = utils.Hash(copy.ToString())
 		copy.Hash = hash
 		if strings.HasPrefix(copy.Hash, pref) {
 			return copy

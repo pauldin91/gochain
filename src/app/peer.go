@@ -8,15 +8,12 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/pauldin91/gochain/src/domain"
-	"github.com/pauldin91/gochain/src/internal"
 )
 
 type Peer struct {
-	p2p    *WsServer
 	wallet *domain.Wallet
 	pool   *domain.TransactionPool
 	chain  *domain.Blockchain
-	cfg    internal.Config
 }
 
 func (ner *Peer) mine() domain.Block {
@@ -26,35 +23,26 @@ func (ner *Peer) mine() domain.Block {
 	data, _ := json.Marshal(validTransactions)
 	block := ner.chain.AddBlock(string(data))
 
-	ner.syncChains()
+	//ner.syncChains()
 	ner.pool.Clear()
-	ner.broadcast(ner.chain.Chain)
+	//ner.broadcast(ner.chain.Chain)
 
 	return block
-}
-
-func (ner *Peer) broadcast(chain []domain.Block) {
-	for _, ws := range ner.p2p.sockets {
-		err := ws.WriteJSON(chain)
-		if err != nil {
-			log.Println("error writing", err)
-		}
-	}
 }
 
 func (ner *Peer) Clear() {
 	ner.pool.Clear()
 }
 
-func (ner *Peer) syncChains() {
+func (ner *HttpApplication) syncChains() {
 
-	chain, _ := json.Marshal(ner.chain)
-	for _, s := range ner.p2p.sockets {
+	chain, _ := json.Marshal(ner.peer.chain)
+	for _, s := range ner.ws.sockets {
 		s.WriteJSON(string(chain))
 	}
 }
 
-func (peer *Peer) listen(w http.ResponseWriter, req *http.Request) {
+func (peer *HttpApplication) listen(w http.ResponseWriter, req *http.Request) {
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  int(peer.cfg.WsReadLimit),
 		WriteBufferSize: int(peer.cfg.WsWriteLimit),
@@ -67,10 +55,11 @@ func (peer *Peer) listen(w http.ResponseWriter, req *http.Request) {
 
 	ws.SetReadLimit(peer.cfg.WsReadLimit)
 
-	if peer.p2p == nil {
-		peer.p2p = &WsServer{}
+	if peer.ws == nil {
+		peer.ws = &WsServer{}
 	}
 	clientId := fmt.Sprintf("%p", ws)
-	peer.p2p.sockets[clientId] = ws
-	peer.broadcast(chain.Chain)
+	peer.ws.sockets[clientId] = ws
+
+	//peer.ws.broadcastMessage(chain.Chain.String())
 }

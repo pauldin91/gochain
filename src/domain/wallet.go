@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/pauldin91/gochain/src/generic"
-	"github.com/pauldin91/gochain/src/internal"
+	"github.com/pauldin91/gochain/src/utils"
 )
 
 type Wallet struct {
 	balance float64 `json:"balance"`
-	keyPair *internal.KeyPair
+	keyPair *utils.KeyPair
 	Address string `json:"address"`
 }
 
@@ -23,7 +23,7 @@ func (w Wallet) String() string {
 func NewWallet(init float64) Wallet {
 	res := Wallet{
 		balance: init,
-		keyPair: internal.NewKeyPair(),
+		keyPair: utils.NewKeyPair(),
 	}
 	res.Address = res.keyPair.GetPublicKey()
 	return res

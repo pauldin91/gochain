@@ -1,16 +1,17 @@
-package internal
+package utils
 
 import "github.com/spf13/viper"
 
 type Config struct {
+	MiningReward   int `mapstructure:"MINING_REWARD"`
+	Difficulty     int `mapstructure:"DIFFICULTY"`
+	MineRate       int `mapstructure:"MINE_RATE"`
+	InitialBalance int `mapstructure:"INITIAL_BALANCE"`
+
 	CertPath          string `mapstructure:"CERTIFICATE_PATH"`
 	CertFile          string `mapstructure:"CERTIFICATE_FILE"`
 	CertKey           string `mapstructure:"CERTIFICATE_KEY"`
 	HttpServerAddress string `mapstructure:"HTTP_SERVER_ADDRESS"`
-	MiningReward      int    `mapstructure:"MINING_REWARD"`
-	Difficulty        int    `mapstructure:"DIFFICULTY"`
-	MineRate          int    `mapstructure:"MINE_RATE"`
-	InitialBalance    int    `mapstructure:"INITIAL_BALANCE"`
 	WsReadLimit       int64  `mapstructure:"READ_LIMIT"`
 	WsWriteLimit      int64  `mapstructure:"WRITE_LIMIT"`
 	WsServerAddress   string `mapstructure:"WS_SERVER_ADDRESS"`

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pauldin91/gochain/src/internal"
+	"github.com/pauldin91/gochain/src/utils"
 )
 
 var genesisBlock = genesis()
@@ -25,7 +25,7 @@ func TestGenesis(t *testing.T) {
 		Nonce:    0,
 	}
 	block.Data = ""
-	block.Hash = internal.Hash(block.ToString())
+	block.Hash = utils.Hash(block.ToString())
 	if genesisBlock.Hash != block.Hash {
 		t.Error("Hashes missmatch")
 	}

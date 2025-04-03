@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/pauldin91/gochain/src/internal"
+	"github.com/pauldin91/gochain/src/utils"
 )
 
 type Application interface {
@@ -15,11 +15,13 @@ type Application interface {
 }
 
 type HttpApplication struct {
-	cfg    internal.Config
+	cfg    utils.Config
 	router *chi.Mux
+	ws     *WsServer
+	peer   *Peer
 }
 
-func (s *HttpApplication) Start(peer *Peer) {
+func (s *HttpApplication) Start() {
 	certFile := filepath.Join(s.cfg.CertPath, s.cfg.CertFile)
 	certKey := filepath.Join(s.cfg.CertPath, s.cfg.CertKey)
 
@@ -41,7 +43,7 @@ func (s *HttpApplication) Start(peer *Peer) {
 	}()
 
 	// WebSocket handling via Chi router
-	s.router.HandleFunc("/ws", peer.p2p.wsHandler)
+	http.HandleFunc("/ws", s.ws.wsHandler)
 
 	log.Printf("INFO: WS server started on %s\n", s.cfg.WsServerAddress)
 	if err := http.ListenAndServeTLS(s.cfg.WsServerAddress, certFile, certKey, nil); err != nil {
