@@ -52,7 +52,7 @@ func (sb *WebApplicationBuilder) Build() *HttpApplication {
 	return sb.app.
 		AddGet(blockEndpoint, sb.app.blockHandler).
 		AddGet(peerDiscoveryEndpoint, sb.app.peerDiscoveryHandler).
-		//AddGet(balanceEndpoint, sb.app.balanceHandler).
+		AddGet(balanceEndpoint, sb.app.balanceHandler).
 		AddGet(publickeyEndpoint, sb.app.publicKeyHandler).
 		AddGet(swaggerDocsEndpoint, httpSwagger.WrapHandler).
 		AddGet(transactionsEndpoint, sb.app.getTransactionsHandler).
