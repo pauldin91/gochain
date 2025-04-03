@@ -41,6 +41,7 @@ func (sb *WebApplicationBuilder) WithRouter() *WebApplicationBuilder {
 func (sb *WebApplicationBuilder) Build() *HttpApplication {
 	return sb.app.
 		AddGet(blockEndpoint, sb.peer.blockHandler).
+		AddGet(peerDiscoveryEndpoint, sb.peer.peerDiscoveryHandler).
 		AddGet(balanceEndpoint, sb.peer.balanceHandler).
 		AddGet(publickeyEndpoint, sb.peer.publicKeyHandler).
 		AddGet(swaggerDocsEndpoint, httpSwagger.WrapHandler).

@@ -1,0 +1,295 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/balance": {
+            "get": {
+                "description": "Retrieves the balance of a wallet",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "balance"
+                ],
+                "summary": "Get balance",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/app.BalanceResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/blocks": {
+            "get": {
+                "description": "Gets the blockchain",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "blocks"
+                ],
+                "summary": "Gets the blockchain",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.BlockchainDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/mine": {
+            "post": {
+                "description": "Mines a new block and adds it to the blockchain",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "mine"
+                ],
+                "summary": "Mine a block",
+                "parameters": [
+                    {
+                        "description": "Block Request Data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/app.BlockRequestDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.BlockResponseDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request data",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/peers": {
+            "get": {
+                "description": "Retrieves the hello from world",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hello"
+                ],
+                "summary": "Get hello world",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.ConnectedPeersResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/public-key": {
+            "get": {
+                "description": "Retrieves the address of a wallet",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "public-key"
+                ],
+                "summary": "Get public key",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.WalletDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/transactions": {
+            "get": {
+                "description": "Gets transactions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Gets transactions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.PoolDto"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a transaction in the pool",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Create transaction",
+                "parameters": [
+                    {
+                        "description": "Transaction Request Data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/app.TransactionRequestDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/transactions/mine": {
+            "post": {
+                "description": "mines a transaction in the pool",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "mines transaction",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "app.BalanceResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.BlockRequestDto": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.BlockResponseDto": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "difficulty": {
+                    "type": "integer"
+                },
+                "hash": {
+                    "type": "string"
+                },
+                "last_hash": {
+                    "type": "string"
+                },
+                "nonce": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.BlockchainDto": {
+            "type": "object",
+            "properties": {
+                "chain": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.ConnectedPeersResponse": {
+            "type": "object",
+            "properties": {
+                "peers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "app.PoolDto": {
+            "type": "object",
+            "properties": {
+                "dtos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/app.TransactionResponseDto"
+                    }
+                }
+            }
+        },
+        "app.TransactionRequestDto": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "recipient": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.TransactionResponseDto": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.WalletDto": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

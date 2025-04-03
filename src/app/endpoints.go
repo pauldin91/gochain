@@ -2,6 +2,7 @@ package app
 
 const (
 	mineBlockEndpoint        string = "/mine"
+	peerDiscoveryEndpoint    string = "/peers"
 	blockEndpoint            string = "/blocks"
 	balanceEndpoint          string = "/balance"
 	publickeyEndpoint        string = "/public-key"

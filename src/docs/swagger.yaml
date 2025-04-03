@@ -1,0 +1,189 @@
+definitions:
+  app.BalanceResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  app.BlockRequestDto:
+    properties:
+      data:
+        type: string
+    type: object
+  app.BlockResponseDto:
+    properties:
+      data:
+        type: string
+      difficulty:
+        type: integer
+      hash:
+        type: string
+      last_hash:
+        type: string
+      nonce:
+        type: integer
+      timestamp:
+        type: string
+    type: object
+  app.BlockchainDto:
+    properties:
+      chain:
+        type: string
+    type: object
+  app.ConnectedPeersResponse:
+    properties:
+      peers:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  app.PoolDto:
+    properties:
+      dtos:
+        items:
+          $ref: '#/definitions/app.TransactionResponseDto'
+        type: array
+    type: object
+  app.TransactionRequestDto:
+    properties:
+      amount:
+        type: number
+      recipient:
+        type: string
+    type: object
+  app.TransactionResponseDto:
+    properties:
+      data:
+        type: string
+    type: object
+  app.WalletDto:
+    properties:
+      address:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /balance:
+    get:
+      description: Retrieves the balance of a wallet
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/app.BalanceResponse'
+            type: array
+      summary: Get balance
+      tags:
+      - balance
+  /blocks:
+    get:
+      description: Gets the blockchain
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.BlockchainDto'
+      summary: Gets the blockchain
+      tags:
+      - blocks
+  /mine:
+    post:
+      consumes:
+      - application/json
+      description: Mines a new block and adds it to the blockchain
+      parameters:
+      - description: Block Request Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/app.BlockRequestDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.BlockResponseDto'
+        "400":
+          description: Invalid request data
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Mine a block
+      tags:
+      - mine
+  /peers:
+    get:
+      description: Retrieves the hello from world
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.ConnectedPeersResponse'
+      summary: Get hello world
+      tags:
+      - hello
+  /public-key:
+    get:
+      description: Retrieves the address of a wallet
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.WalletDto'
+      summary: Get public key
+      tags:
+      - public-key
+  /transactions:
+    get:
+      description: Gets transactions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.PoolDto'
+      summary: Gets transactions
+      tags:
+      - transactions
+    post:
+      description: Creates a transaction in the pool
+      parameters:
+      - description: Transaction Request Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/app.TransactionRequestDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Create transaction
+      tags:
+      - transactions
+  /transactions/mine:
+    post:
+      description: mines a transaction in the pool
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: mines transaction
+      tags:
+      - transactions
+swagger: "2.0"
